@@ -25,13 +25,13 @@ def compile_course(
 ) -> Path:
     """Compile un fichier Markdown en présentation HTML"""
     
-    print(f"📖 Lecture de {md_file}...")
+    print(f"Lecture de {md_file}...")
     md_content = md_file.read_text(encoding='utf-8')
     
-    print("🔍 Analyse du contenu...")
+    print("Analyse du contenu...")
     presentation = parse_presentation(md_content)
     
-    print(f"📊 {presentation.total_slides} slides détectées")
+    print(f"{presentation.total_slides} slides détectées")
     
     # Statistiques par type
     stats = {
@@ -43,7 +43,7 @@ def compile_course(
     print(f"   ├─ {stats['details_seuls']} avec détails seuls")
     print(f"   └─ {stats['sans_annexes']} sans annexes")
     
-    print("🏗️  Génération du HTML...")
+    print("Génération du HTML...")
     generator = HTMLGenerator(base_path=md_file.parent)
     html = generator.generate(presentation, js_uri=js_uri)
     
@@ -51,7 +51,7 @@ def compile_course(
         output_file = md_file.with_suffix('.html')
     
     output_file.write_text(html, encoding='utf-8')
-    print(f"✅ Présentation générée : {output_file}")
+    print(f"Présentation générée : {output_file}")
     
     return output_file
 
@@ -90,7 +90,7 @@ Exemples:
     
     try:
         output = compile_course(args.input, args.output, args.js_uri)
-        print(f"\n🎉 Succès ! Ouvrez {output} dans votre navigateur")
+        print(f"\n Succès ! Ouvrez {output} dans votre navigateur")
     except Exception as e:
         print(f"❌ Erreur lors de la compilation : {e}")
         import traceback
