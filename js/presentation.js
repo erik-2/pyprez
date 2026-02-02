@@ -1,6 +1,5 @@
 /**
- * Système de Navigation pour Présentation avec Co-slides
- * Version finale sans slides cachées
+ * Système de Navigation pour Présentation avec diapositives attenantes
  */
 
 const PresentationNav = (function() {

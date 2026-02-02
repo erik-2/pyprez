@@ -10,6 +10,7 @@ Usage:
 
 import re
 import sys
+import os
 import argparse
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -271,12 +272,21 @@ def get_html_template() -> str:
         </div>
     </div>
 
-    <script src="{{JS_SCRIPT_URI}}"></script>
+    {{JS_SCRIPT}}
     <script>
         PresentationNav.init({{TOTAL_SLIDES}});
     </script>
 </body>
 </html>'''
+
+def get_js_script(uri:Optional[str]) -> str:
+    """Retourne le sript js ou un lien vers ce script"""
+    if uri is not None:
+        return f'<script src="{uri}"></script>'
+    else:
+        js_file = open("./js/presentation.js")
+
+        return f"<script>{js_file.read()}</script>"
 
 
 def get_css() -> str:
@@ -370,7 +380,7 @@ def compile_course(md_file: Path, output_file: Optional[Path] = None) -> Path:
     html = html.replace('{{CSS}}', get_css())
     html = html.replace('{{SLIDES}}', '\n'.join(slides_html))
     html = html.replace('{{TOTAL_SLIDES}}', str(total_slides))
-    html = html.replace('{{JS_SCRIPT_URI}}', "https://newick.fr/cours/presentation.js")
+    html = html.replace('{{JS_SCRIPT}}', get_js_script(uri=None))
     # Écrire le fichier de sortie
     if output_file is None:
         output_file = md_file.with_suffix('.html')
