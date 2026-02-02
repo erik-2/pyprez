@@ -282,8 +282,10 @@ def get_html_template() -> str:
 def get_js_script(uri:Optional[str]) -> str:
     """Retourne le sript js ou un lien vers ce script"""
     if uri is not None:
+        print(f"Lien js vers {uri} ")
         return f'<script src="{uri}"></script>'
     else:
+        print(f"Inclus js/presentation.js ")
         js_file = open("./js/presentation.js")
 
         return f"<script>{js_file.read()}</script>"
@@ -291,14 +293,11 @@ def get_js_script(uri:Optional[str]) -> str:
 
 def get_css() -> str:
     """Retourne le CSS complet"""
-    # Lire le CSS depuis le fichier cours-noyade-complet.html
-    css_file = Path(__file__).parent / 'cours-noyade-complet.html'
+    css_file = Path(__file__).parent / 'css/style.css'
     if css_file.exists():
+        print("Utilise css/style.css")
         content = css_file.read_text(encoding='utf-8')
-        # Extraire le CSS entre <style> et </style>
-        match = re.search(r'<style>(.*?)</style>', content, re.DOTALL)
-        if match:
-            return match.group(1).strip()
+        return content
     
     # CSS par défaut minimal si fichier non trouvé
     return '''
