@@ -23,6 +23,23 @@ def format_markdown(text: str) -> str:
     return text
 
 
+def format_detail_line(line: str) -> str:
+    """Formate une ligne de détail (texte, image, etc.) en HTML"""
+    # Image Markdown: ![légende](url)
+    img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)$', line.strip())
+    if img_match:
+        alt = img_match.group(1)
+        url = img_match.group(2)
+        caption = f'<figcaption>{alt}</figcaption>' if alt else ''
+        return f'''<figure class="detail-image">
+                            <img src="{url}" alt="{alt}">
+                            {caption}
+                        </figure>'''
+    
+    # Texte normal avec gras
+    return f'<p>{format_bold(line)}</p>'
+
+
 class HTMLGenerator:
     """Génère le HTML d'une présentation"""
     
@@ -151,7 +168,7 @@ class HTMLGenerator:
     def _slide_details(self, slide: Slide, total: int, has_questions: bool) -> str:
         """Génère la slide de détails"""
         paragraphs = '\n'.join(
-            f'                        <p>{format_bold(d)}</p>' 
+            f'                        {format_detail_line(d)}' 
             for d in slide.details
         )
         
@@ -274,6 +291,9 @@ class HTMLGenerator:
         .detail-text { font-size: clamp(1rem, 1.8vw, 1.3rem); line-height: 1.8; color: var(--text-light); }
         .detail-text p { margin-bottom: 1.5rem; }
         .detail-text strong { color: var(--primary); font-weight: 600; }
+        .detail-image { margin: 2rem 0; text-align: center; }
+        .detail-image img { max-width: 100%; max-height: 50vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .detail-image figcaption { margin-top: 0.75rem; font-size: 0.95rem; color: var(--text-light); font-style: italic; }
         .question-list { list-style: none; }
         .question-item { background: white; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 4px solid var(--warning); font-size: clamp(1rem, 1.8vw, 1.3rem); }
         .question-number { display: inline-block; background: var(--warning); color: white; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-weight: bold; margin-right: 1rem; }
@@ -370,4 +390,3 @@ const PresentationNav = (function() {
     return { init, goTo: (s, v=0) => { currentSlide = s; currentView = v; updatePosition(); } };
 })();
 '''
-

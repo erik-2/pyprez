@@ -1,14 +1,15 @@
 /**
- * Système de Navigation pour Présentation avec diapositives attenantes
+ * Navigation pour Présentation avec slides annexes
+ * Supporte: data-no-annexes="true" et data-max-view="1"
  */
 
 const PresentationNav = (function() {
     'use strict';
 
-    let currentSlide = 0;  // Index de la slide principale (0, 1, 2...)
+    let currentSlide = 0;
     let currentView = 0;   // 0=main, 1=detail, 2=question
     let totalSlides = 0;
-    let slideGroups = [];  // [{main, detail, question, hasAnnexes}, ...]
+    let slideGroups = [];
 
     // Touch
     let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
@@ -17,7 +18,6 @@ const PresentationNav = (function() {
 
     /**
      * Construit les groupes de slides
-     * Parcourt toutes les slides et les groupe intelligemment
      */
     function buildSlideGroups() {
         slideGroups = [];
@@ -28,90 +28,74 @@ const PresentationNav = (function() {
             const mainSlide = allSlides[i];
             
             if (!mainSlide.classList.contains('slide-main')) {
-                console.warn('⚠️ Slide non-main trouvée en position main:', i);
                 i++;
                 continue;
             }
             
-            const hasAnnexes = mainSlide.getAttribute('data-no-annexes') !== 'true';
+            // Déterminer maxView
+            let maxView = 2;
+            if (mainSlide.dataset.noAnnexes === 'true') {
+                maxView = 0;
+            } else if (mainSlide.dataset.maxView === '1') {
+                maxView = 1;
+            }
             
             const group = {
                 main: mainSlide,
                 detail: null,
                 question: null,
-                hasAnnexes: hasAnnexes
+                maxView: maxView
             };
             
-            if (hasAnnexes) {
-                // Slide avec annexes : prendre les 2 suivantes
-                group.detail = allSlides[i + 1];
-                group.question = allSlides[i + 2];
-                i += 3;
-            } else {
-                // Slide sans annexes : juste la main
-                // Ajouter des placeholders pour aligner la grille
+            if (maxView === 0) {
+                // Sans annexes: ajouter placeholders
                 for (let j = 0; j < 2; j++) {
-                    const placeholder = document.createElement('div');
-                    placeholder.classList.add('slide');
-                    placeholder.style.visibility = 'hidden';
-                    mainSlide.after(placeholder);
+                    const ph = document.createElement('div');
+                    ph.className = 'slide';
+                    ph.style.visibility = 'hidden';
+                    mainSlide.after(ph);
                 }
                 i += 1;
+            } else {
+                // Avec annexes
+                group.detail = allSlides[i + 1];
+                if (maxView === 2) {
+                    group.question = allSlides[i + 2];
+                }
+                i += 3;
             }
             
             slideGroups.push(group);
         }
         
-        console.log(`📦 ${slideGroups.length} slides principales:`, slideGroups.map((g, idx) => 
-            `${idx}: ${g.hasAnnexes ? 'AVEC' : 'SANS'} annexes`
-        ));
-        console.log(slideGroups);
+        console.log(`📦 ${slideGroups.length} slides:`, 
+            slideGroups.map((g, i) => `${i}:maxView=${g.maxView}`).join(', '));
     }
 
-    /**
-     * Retourne l'élément DOM à afficher
-     */
+    function getMaxView(idx) {
+        return (idx >= 0 && idx < slideGroups.length) ? slideGroups[idx].maxView : 0;
+    }
+
     function getActiveElement() {
         if (currentSlide < 0 || currentSlide >= slideGroups.length) return null;
-        
-        const group = slideGroups[currentSlide];
-        
-        if (currentView === 0) return group.main;
-        if (currentView === 1 && group.hasAnnexes) return group.detail;
-        if (currentView === 2 && group.hasAnnexes) return group.question;
-        
-        return group.main; // Fallback
+        const g = slideGroups[currentSlide];
+        if (currentView === 0) return g.main;
+        if (currentView === 1 && g.maxView >= 1) return g.detail;
+        if (currentView === 2 && g.maxView >= 2) return g.question;
+        return g.main;
     }
 
-    /**
-     * Vérifie si une slide a des annexes
-     */
-    function hasAnnexes(slideIndex) {
-        return slideIndex >= 0 && slideIndex < slideGroups.length && slideGroups[slideIndex].hasAnnexes;
-    }
-
-    /**
-     * Met à jour la position de la grille
-     */
     function updatePosition() {
         const grid = document.getElementById('slidesGrid');
+        const maxView = getMaxView(currentSlide);
         
-        let col = currentView;
-        if (!hasAnnexes(currentSlide)) {
-            col = 0;
-            currentView = 0;
+        if (currentView > maxView) {
+            currentView = maxView;
         }
         
-        const row = currentSlide;
+        grid.style.transform = `translate(${-currentView * 100}vw, ${-currentSlide * 100}vh)`;
         
-        const translateX = -col * 100;
-        const translateY = -row * 100;
-        
-        grid.style.transform = `translate(${translateX}vw, ${translateY}vh)`;
-        
-        console.log(`✅ Slide ${currentSlide}, Vue ${currentView} → ligne ${row}, col ${col} → (${translateX}vw, ${translateY}vh)`);
-        
-        updateFixedElementsVisibility();
+        updateFixedElements();
         
         setTimeout(() => {
             const el = getActiveElement();
@@ -119,43 +103,41 @@ const PresentationNav = (function() {
         }, 100);
     }
 
-    /**
-     * Gère la visibilité des éléments fixes
-     */
-    function updateFixedElementsVisibility() {
+    function updateFixedElements() {
         // Masquer tous
-        document.querySelectorAll('.slide-detail, .slide-question').forEach(slide => {
-            const pos = slide.querySelector('.position-indicator');
-            const nav = slide.querySelector('.nav-hint');
-            if (pos) pos.style.opacity = '0';
-            if (nav) nav.style.opacity = '0';
+        document.querySelectorAll('.slide-detail, .slide-question').forEach(s => {
+            const p = s.querySelector('.position-indicator');
+            const n = s.querySelector('.nav-hint');
+            if (p) p.style.opacity = '0';
+            if (n) n.style.opacity = '0';
         });
         
-        // Afficher l'actif
+        // Afficher actif
         if (currentView > 0) {
             const active = getActiveElement();
             if (active) {
-                const pos = active.querySelector('.position-indicator');
-                const nav = active.querySelector('.nav-hint');
-                if (pos) pos.style.opacity = '0.7';
-                if (nav) nav.style.opacity = '0.6';
+                const p = active.querySelector('.position-indicator');
+                const n = active.querySelector('.nav-hint');
+                if (p) p.style.opacity = '0.7';
+                if (n) n.style.opacity = '0.6';
             }
         }
     }
 
-    /**
-     * Navigation clavier
-     */
     function handleKeyboard(e) {
         const active = getActiveElement();
+        const maxView = getMaxView(currentSlide);
         
-        // Gestion du scroll sur slides défilables
-        if (active && (active.classList.contains('slide-detail') || active.classList.contains('slide-question')) && currentView > 0) {
-            const isAtTop = active.scrollTop <= 1;
-            const isAtBottom = Math.abs(active.scrollHeight - active.scrollTop - active.clientHeight) <= 2;
-            
-            if (e.key === 'ArrowDown' && !isAtBottom) return;
-            if (e.key === 'ArrowUp' && !isAtTop) return;
+        // Scroll sur slides défilables
+        if (active && currentView > 0) {
+            const isScrollable = active.classList.contains('slide-detail') || 
+                                 active.classList.contains('slide-question');
+            if (isScrollable) {
+                const atTop = active.scrollTop <= 1;
+                const atBottom = Math.abs(active.scrollHeight - active.scrollTop - active.clientHeight) <= 2;
+                if (e.key === 'ArrowDown' && !atBottom) return;
+                if (e.key === 'ArrowUp' && !atTop) return;
+            }
         }
         
         switch(e.key) {
@@ -179,14 +161,9 @@ const PresentationNav = (function() {
             
             case 'ArrowRight':
                 e.preventDefault();
-                if (!hasAnnexes(currentSlide)) return;
-                if (currentView < 2) {
+                if (currentView < maxView) {
                     currentView++;
                     updatePosition();
-                    setTimeout(() => {
-                        const el = getActiveElement();
-                        if (el) el.scrollTop = 0;
-                    }, 100);
                 }
                 break;
             
@@ -200,14 +177,11 @@ const PresentationNav = (function() {
         }
     }
 
-    /**
-     * Touch
-     */
     function handleTouchStart(e) {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
-        
-        const scrollable = document.elementFromPoint(touchStartX, touchStartY)?.closest('.slide-detail, .slide-question');
+        const scrollable = document.elementFromPoint(touchStartX, touchStartY)
+            ?.closest('.slide-detail, .slide-question');
         touchStartScrollTop = scrollable ? scrollable.scrollTop : 0;
     }
 
@@ -218,72 +192,33 @@ const PresentationNav = (function() {
     }
 
     function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        const active = getActiveElement();
+        const dX = touchEndX - touchStartX;
+        const dY = touchEndY - touchStartY;
+        const maxView = getMaxView(currentSlide);
         
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (Math.abs(deltaX) > minSwipeDistance) {
-                if (deltaX > 0) {
-                    if (currentView > 0) {
-                        currentView--;
-                        updatePosition();
-                    }
-                } else {
-                    if (!hasAnnexes(currentSlide)) return;
-                    if (currentView < 2) {
-                        currentView++;
-                        updatePosition();
-                        setTimeout(() => {
-                            const el = getActiveElement();
-                            if (el) el.scrollTop = 0;
-                        }, 100);
-                    }
-                }
+        if (Math.abs(dX) > Math.abs(dY) && Math.abs(dX) > minSwipeDistance) {
+            // Swipe horizontal
+            if (dX > 0 && currentView > 0) {
+                currentView--;
+                updatePosition();
+            } else if (dX < 0 && currentView < maxView) {
+                currentView++;
+                updatePosition();
             }
-        } else {
-            if (Math.abs(deltaY) > minSwipeDistance) {
-                if (active && (active.classList.contains('slide-detail') || active.classList.contains('slide-question')) && currentView > 0) {
-                    const isAtTop = active.scrollTop <= 1;
-                    const isAtBottom = Math.abs(active.scrollHeight - active.scrollTop - active.clientHeight) <= 2;
-                    
-                    if (deltaY > 0) {
-                        if (!isAtTop || active.scrollTop !== touchStartScrollTop) return;
-                        if (currentSlide > 0) {
-                            currentSlide--;
-                            currentView = 0;
-                            updatePosition();
-                        }
-                    } else {
-                        if (!isAtBottom || active.scrollTop !== touchStartScrollTop) return;
-                        if (currentSlide < totalSlides - 1) {
-                            currentSlide++;
-                            currentView = 0;
-                            updatePosition();
-                        }
-                    }
-                } else {
-                    if (deltaY > 0) {
-                        if (currentSlide > 0) {
-                            currentSlide--;
-                            currentView = 0;
-                            updatePosition();
-                        }
-                    } else {
-                        if (currentSlide < totalSlides - 1) {
-                            currentSlide++;
-                            currentView = 0;
-                            updatePosition();
-                        }
-                    }
-                }
+        } else if (Math.abs(dY) > minSwipeDistance) {
+            // Swipe vertical
+            if (dY > 0 && currentSlide > 0) {
+                currentSlide--;
+                currentView = 0;
+                updatePosition();
+            } else if (dY < 0 && currentSlide < totalSlides - 1) {
+                currentSlide++;
+                currentView = 0;
+                updatePosition();
             }
         }
     }
 
-    /**
-     * Initialisation
-     */
     function init(total) {
         if (!total || total < 1) {
             console.error('❌ totalSlides invalide');
@@ -293,11 +228,6 @@ const PresentationNav = (function() {
         totalSlides = total;
         buildSlideGroups();
 
-        if (slideGroups.length !== totalSlides) {
-            console.error(`❌ ERREUR: ${slideGroups.length} slides détectées mais ${totalSlides} attendues!`);
-            console.error('Vérifiez votre HTML: chaque slide SANS annexes ne doit avoir QUE la slide principale (pas de slides cachées)');
-        }
-
         document.addEventListener('keydown', handleKeyboard);
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchend', handleTouchEnd, false);
@@ -306,7 +236,7 @@ const PresentationNav = (function() {
         currentView = 0;
         updatePosition();
 
-        console.log(`✅ PresentationNav: ${totalSlides} slides attendues, ${slideGroups.length} détectées`);
+        console.log(`✅ PresentationNav: ${totalSlides} slides`);
     }
 
     function destroy() {
@@ -316,12 +246,9 @@ const PresentationNav = (function() {
     }
 
     function goTo(slideIndex, view = 0) {
-        if (slideIndex < 0 || slideIndex >= totalSlides || view < 0 || view > 2) {
-            console.error('❌ Index invalide');
-            return;
-        }
+        if (slideIndex < 0 || slideIndex >= totalSlides) return;
         currentSlide = slideIndex;
-        currentView = view;
+        currentView = Math.min(view, getMaxView(slideIndex));
         updatePosition();
     }
 

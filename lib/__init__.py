@@ -1,3 +1,6 @@
+"""
+Bibliothèque pour la compilation de présentations Markdown
+"""
 
 from .models import Slide, Section, Presentation
 from .parser import parse_presentation, parse_details_only
@@ -17,4 +20,3 @@ __all__ = [
     'SLIDE_TYPES',
     'ASSETS',
 ]
-

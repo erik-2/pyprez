@@ -172,6 +172,17 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
 
 def _parse_detail_line(line: str) -> Dict[str, str]:
     """Parse une ligne de détail et retourne son type et contenu"""
+    import re
+    
+    # Image Markdown: ![légende](url)
+    img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)$', line)
+    if img_match:
+        return {
+            'type': 'image',
+            'alt': img_match.group(1),
+            'url': img_match.group(2)
+        }
+    
     # Sous-titre en gras sans deux-points
     if line.startswith('**') and line.endswith('**') and ':' not in line:
         return {'type': 'subtitle', 'content': line[2:-2]}
@@ -186,4 +197,3 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     
     # Paragraphe normal
     return {'type': 'paragraph', 'content': line}
-
