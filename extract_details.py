@@ -109,6 +109,18 @@ def _generate_section(section, idx: int) -> str:
             content = format_markdown(detail['content'])
             content_parts.append(f'    <li>{content}</li>')
         
+        elif detail['type'] == 'image':
+            if current_list:
+                content_parts.append('</ul>')
+                current_list = False
+            alt = detail.get('alt', '')
+            url = detail.get('url', '')
+            caption = f'<figcaption>{alt}</figcaption>' if alt else ''
+            content_parts.append(f'''<figure class="detail-image">
+                <img src="{url}" alt="{alt}">
+                {caption}
+            </figure>''')
+        
         else:  # paragraph
             if current_list:
                 content_parts.append('</ul>')
@@ -196,6 +208,27 @@ def _get_details_css() -> str:
         .detail-paragraph { font-size: 1rem; margin-bottom: 1rem; text-align: justify; }
         .detail-list { margin-left: 2rem; margin-bottom: 1rem; }
         .detail-list li { margin-bottom: 0.5rem; }
+        .detail-image {
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+        .detail-image img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .detail-image figcaption {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+        @media print {
+            .detail-image img {
+                max-height: 300px;
+            }
+        }
         strong { color: var(--primary); font-weight: 600; }
         em { font-style: italic; color: var(--text-light); }
         code { background: var(--bg-section); padding: 0.2rem 0.4rem; border-radius: 3px; font-family: monospace; color: var(--secondary); }
@@ -284,3 +317,4 @@ un document élégant prêt à imprimer ou convertir en PDF.
 
 if __name__ == '__main__':
     main()
+
