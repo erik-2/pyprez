@@ -1,0 +1,388 @@
+:root {
+  --primary: #0a4d68;
+  --secondary: #088395;
+  --accent: #05bfdb;
+  --warning: #ff6b35;
+  --bg-main: #f8f9fa;
+  --bg-detail: #e8f4f8;
+  --bg-question: #fff4e6;
+  --text: #1a1a1a;
+  --text-light: #4a5568;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Work Sans', sans-serif;
+  background: var(--bg-main);
+  overflow: hidden;
+  color: var(--text);
+  position: relative;
+}
+
+/* Scrollbar personnalisée pour slides défilables */
+.slide-detail::-webkit-scrollbar,
+.slide-question::-webkit-scrollbar {
+  width: 8px;
+}
+
+.slide-detail::-webkit-scrollbar-track,
+.slide-question::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.slide-detail::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 4px;
+}
+
+.slide-question::-webkit-scrollbar-thumb {
+  background: var(--warning);
+  border-radius: 4px;
+}
+
+.slide-detail::-webkit-scrollbar-thumb:hover,
+.slide-question::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Conteneur principal */
+.presentation-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Masquer les éléments fixed des slides non visibles */
+.slide {
+  --visible: 0;
+}
+
+.slide .position-indicator,
+.slide .nav-hint {
+  opacity: var(--visible);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.slide-main .position-indicator,
+.slide-main .nav-hint {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Grille de slides */
+.slides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 100vw);
+  grid-auto-rows: 100vh;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Chaque slide */
+.slide {
+  width: 100vw;
+  height: 100vh;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+/* Slides détails et questions défilables */
+.slide-detail,
+.slide-question {
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.slide-detail .content,
+.slide-question .content {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+/* Slide principale */
+.slide-main {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+}
+
+/* Slide détails */
+.slide-detail {
+  background: var(--bg-detail);
+}
+
+/* Slide questions */
+.slide-question {
+  background: var(--bg-question);
+}
+
+/* Titres */
+h1 {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  margin-bottom: 2rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-family: 'Crimson Pro', serif;
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+}
+
+.slide-question h2 {
+  color: var(--warning);
+}
+
+/* Contenu */
+.content {
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.slide-main .content {
+  max-width: 1000px;
+}
+
+/* Sous-titre */
+.subtitle {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  opacity: 0.9;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+/* Liste de points clés */
+.key-points {
+  list-style: none;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  line-height: 1.8;
+}
+
+.key-points li {
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  position: relative;
+}
+
+.key-points li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.slide-main .key-points li::before {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Texte détaillé */
+.detail-text {
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  line-height: 1.8;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+}
+
+.detail-text p {
+  margin-bottom: 1.5rem;
+}
+
+.detail-text strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Questions */
+.question-list {
+  list-style: none;
+}
+
+.question-item {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--warning);
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  line-height: 1.6;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.question-item:hover {
+  transform: translateX(8px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.question-number {
+  display: inline-block;
+  background: var(--warning);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 32px;
+  font-weight: bold;
+  margin-right: 1rem;
+  font-size: 1rem;
+}
+
+/* Navigation hints */
+.nav-hint {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.6;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  font-weight: 300;
+  z-index: 10;
+}
+
+.slide-main .nav-hint {
+  color: white;
+}
+
+.slide-detail .nav-hint,
+.slide-question .nav-hint {
+  position: fixed;
+}
+
+.nav-hint span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.key-icon {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.slide-detail .key-icon,
+.slide-question .key-icon {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Indicateur de position */
+.position-indicator {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  font-weight: 500;
+  z-index: 10;
+}
+
+.slide-main .position-indicator {
+  color: white;
+}
+
+.slide-detail .position-indicator,
+.slide-question .position-indicator {
+  position: fixed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slide {
+    padding: 2rem 1.5rem;
+  }
+
+  .nav-hint {
+    bottom: 1rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .key-icon {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .image-text-container {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* Animation d'entrée */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content>* {
+  animation: slideIn 0.6s ease-out backwards;
+}
+
+.content>*:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.content>*:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.content>*:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.content>*:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* Effet de vague pour le fond des slides principales */
+.slide-main::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+  pointer-events: none;
+}
+
+/* Container image + texte côte à côte */
+.image-text-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin: 2rem 0;
+}

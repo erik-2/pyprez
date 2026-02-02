@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Compilateur de Présentation avec Co-slides
+Compilateur de Présentation avec diapositives attenantes (détail, question)
 Transforme un fichier Markdown structuré en présentation HTML interactive
 
 Usage:
@@ -135,7 +135,7 @@ def generate_html_slide_title(slide: Slide) -> str:
     return f'''
             <!-- SLIDE TITRE -->
             <div class="slide slide-main" data-no-annexes="true">
-                <div class="position-indicator">Titre</div>
+                <div class="position-indicator"></div>
                 <div class="content">
                     <h1>{slide.title}</h1>
                     {f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''}
@@ -271,7 +271,7 @@ def get_html_template() -> str:
         </div>
     </div>
 
-    <script src="presentation-navigation.js"></script>
+    <script src="{{JS_SCRIPT_URI}}"></script>
     <script>
         PresentationNav.init({{TOTAL_SLIDES}});
     </script>
@@ -370,7 +370,7 @@ def compile_course(md_file: Path, output_file: Optional[Path] = None) -> Path:
     html = html.replace('{{CSS}}', get_css())
     html = html.replace('{{SLIDES}}', '\n'.join(slides_html))
     html = html.replace('{{TOTAL_SLIDES}}', str(total_slides))
-    
+    html = html.replace('{{JS_SCRIPT_URI}}', "https://newick.fr/cours/presentation.js")
     # Écrire le fichier de sortie
     if output_file is None:
         output_file = md_file.with_suffix('.html')
