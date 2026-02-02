@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Extracteur de Sections Détails - Cours Markdown
-Crée un document HTML élégant et imprimable à partir des sections **Détails:**
+Crée un document HTML élégant et imprimable à partir des sections :::details
 
 Usage:
     python extract_details.py cours.md
@@ -68,13 +68,13 @@ def parse_markdown_for_details(md_content: str) -> tuple[Dict[str, str], List[Se
             in_details = False
         
         # Section détails
-        elif line == '**Détails:**' or line == '**Details:**':
+        elif line == ':::details': 
             in_details = True
             if current_section:
                 current_section.is_details_section = True
         
         # Sortie de la section détails
-        elif line.startswith('**Questions:**') or line == '[no-annexes]':
+        elif line.startswith(':::questions') or line == '[no-annexes]':
             in_details = False
         
         # Contenu des détails
@@ -495,14 +495,14 @@ def extract_details(md_file: Path, output_file: Optional[Path] = None) -> Path:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Extrait les sections **Détails:** d\'un cours Markdown et crée un document HTML imprimable',
+        description='Extrait les sections :::details d\'un cours Markdown et crée un document HTML imprimable',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Exemples:
   python extract_details.py cours_hypothermie.md
   python extract_details.py cours_hypothermie.md -o notes.html
   
-Le script extrait uniquement les sections marquées **Détails:** et crée
+Le script extrait uniquement les sections marquées :::details et crée
 un document élégant prêt à imprimer ou convertir en PDF.
         '''
     )
