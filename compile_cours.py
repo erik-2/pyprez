@@ -85,15 +85,15 @@ def parse_markdown(md_content: str) -> tuple[Dict[str, str], List[Slide]]:
             current_section = 'main'
         
         # Section détails
-        elif line == '**Détails:**' or line == '**Details:**':
+        elif line == ':::details' :
             current_section = 'details'
         
         # Section questions
-        elif line == '**Questions:**':
+        elif line == ':::questions':
             current_section = 'questions'
         
         # Option no-annexes
-        elif line == '[no-annexes]':
+        elif line == ':::no-annexes':
             if current_slide:
                 current_slide.has_annexes = False
         
@@ -130,6 +130,12 @@ def parse_markdown(md_content: str) -> tuple[Dict[str, str], List[Slide]]:
     
     return metadata, slides
 
+def format_bold_text(text: str) -> str:
+    """
+    Convertit le texte en gras Markdown en HTML
+    """
+    pattern = r'\*\*([^*]+)\*\*'
+    return re.sub(pattern, r'<strong>\1</strong>', text)
 
 def generate_html_slide_title(slide: Slide) -> str:
     """Génère le HTML pour une slide de titre"""
@@ -192,12 +198,8 @@ def generate_html_slide_content(slide: Slide, total: int) -> str:
                     <div class="detail-text">'''
         
         for detail in slide.details:
-            if detail.startswith('**') and detail.endswith('**'):
-                # Sous-titre en gras
-                title = detail[2:-2]
-                main_html += f'\n                        <p><strong>{title}</strong></p>'
-            else:
-                main_html += f'\n                        <p>{detail}</p>'
+            formatted = format_bold_text(detail)
+            main_html += f'\n                        <p>{formatted}</p>'
         
         main_html += '''
                     </div>
