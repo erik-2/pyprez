@@ -1,15 +1,15 @@
 ---
-title: Hypothermie Accidentelle
+title: Hypothermie
 subtitle: Prise en Charge et Pronostic
-author: Dr Éric Tellier
-date: Mars 2025
+author: Éric Tellier
+date: Mars 2026
 theme: glacier
 university: Université de Bordeaux
 department: DU Prise en charge des situations urgentes
-level: DU / DESC
+level: DU / EIADE 
 ---
 
-# Hypothermie Accidentelle
+# Hypothermie
 > Prise en Charge et Pronostic
 
 ## Définition et Épidémiologie
