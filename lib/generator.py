@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from .models import Slide, Presentation
-from .config import GOOGLE_FONTS_URL, ASSETS
+from .config import GOOGLE_FONTS_URL, ASSETS, THEMES, DEFAULT_THEME
 
 
 def format_bold(text: str) -> str:
@@ -36,15 +36,18 @@ def format_detail_line(line: str) -> str:
                             {caption}
                         </figure>'''
     
-    # Texte normal avec gras
-    return f'<p>{format_bold(line)}</p>'
+    # Texte normal avec formatage Markdown
+    return f'<p>{format_markdown(line)}</p>'
 
 
 class HTMLGenerator:
     """Génère le HTML d'une présentation"""
     
-    def __init__(self, base_path: Optional[Path] = None):
+    def __init__(self, base_path: Optional[Path] = None, theme: Optional[str] = None):
         self.base_path = base_path or Path(__file__).parent.parent
+        self.theme = theme or DEFAULT_THEME
+        if self.theme not in THEMES:
+            self.theme = DEFAULT_THEME
     
     def generate(self, presentation: Presentation, js_uri: Optional[str] = None) -> str:
         """Génère le HTML complet de la présentation"""
@@ -239,11 +242,22 @@ class HTMLGenerator:
             </div>'''
     
     def _load_css(self) -> str:
-        """Charge le CSS depuis le fichier ou retourne le CSS par défaut"""
+        """Charge le CSS avec le thème appliqué"""
+        colors = THEMES.get(self.theme, THEMES[DEFAULT_THEME])
+        
         css_path = self.base_path / ASSETS['css']
         if css_path.exists():
-            return css_path.read_text(encoding='utf-8')
-        return self._default_css()
+            css = css_path.read_text(encoding='utf-8')
+        else:
+            css = self._default_css()
+        
+        # Appliquer les couleurs du thème
+        css = css.replace('#0a4d68', colors['primary'])
+        css = css.replace('#088395', colors['secondary'])
+        css = css.replace('#05bfdb', colors['accent'])
+        css = css.replace('#ff6b35', colors['warning'])
+        
+        return css
     
     def _get_js_script(self, uri: Optional[str] = None) -> str:
         """Retourne le script JS (lien ou inline)"""

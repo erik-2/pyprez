@@ -2,7 +2,7 @@
 Modèles de données pour les slides et sections
 """
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from dataclasses import dataclass, field
 
 

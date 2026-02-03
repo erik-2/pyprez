@@ -26,6 +26,30 @@ MD_PREFIXES = {
     'list_item': ('- ', '* '),
 }
 
+# Thèmes de couleurs
+THEMES = {
+    'ocean': {
+        'primary': '#0a4d68',
+        'secondary': '#088395',
+        'accent': '#05bfdb',
+        'warning': '#ff6b35',
+    },
+    'glacier': {
+        'primary': '#1a365d',
+        'secondary': '#2c5282',
+        'accent': '#63b3ed',
+        'warning': '#ed8936',
+    },
+    'bordeaux': {
+        'primary': '#742a2a',
+        'secondary': '#9b2c2c',
+        'accent': '#fc8181',
+        'warning': '#d69e2e',
+    },
+}
+
+DEFAULT_THEME = 'ocean'
+
 # CSS et JS par défaut (chemins relatifs au script principal)
 ASSETS = {
     'css': 'css/style.css',

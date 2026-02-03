@@ -254,29 +254,29 @@ def _get_details_css() -> str:
 def extract_details(md_file: Path, output_file: Path | None = None) -> Path | None:
     """Extrait les sections détails et génère un HTML imprimable"""
     
-    print(f"Lecture de {md_file}...")
+    print(f"📖 Lecture de {md_file}...")
     md_content = md_file.read_text(encoding='utf-8')
     
-    print("Extraction des sections détails...")
+    print("🔍 Extraction des sections détails...")
     metadata, sections = parse_details_only(md_content)
     
     if not sections:
         print("⚠️  Aucune section avec détails trouvée !")
         return None
     
-    print(f"{len(sections)} sections avec détails extraites")
+    print(f"📊 {len(sections)} sections avec détails extraites")
     
-    print("Génération du document HTML...")
+    print("🎨 Génération du document HTML...")
     html = generate_details_document(metadata, sections)
     
     if output_file is None:
         output_file = md_file.with_name(md_file.stem + '_details.html')
     
     output_file.write_text(html, encoding='utf-8')
-    print(f"Document généré : {output_file}")
+    print(f"✅ Document généré : {output_file}")
     
     total_paragraphs = sum(len(s.details) for s in sections)
-    print(f"{total_paragraphs} éléments de contenu extraits")
+    print(f"📝 {total_paragraphs} éléments de contenu extraits")
     
     return output_file
 
@@ -306,7 +306,8 @@ un document élégant prêt à imprimer ou convertir en PDF.
     try:
         output = extract_details(args.input, args.output)
         if output:
-            print(f"\n Succès ! Ouvrez {output} dans votre navigateur")
+            print(f"\n🎉 Succès ! Ouvrez {output} dans votre navigateur")
+            print("💡 Astuce : Utilisez le bouton 'Imprimer' ou Ctrl+P pour générer un PDF")
     except Exception as e:
         print(f"❌ Erreur lors de l'extraction : {e}")
         import traceback
@@ -316,4 +317,3 @@ un document élégant prêt à imprimer ou convertir en PDF.
 
 if __name__ == '__main__':
     main()
-
