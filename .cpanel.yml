@@ -1,0 +1,9 @@
+deployment:
+  tasks:
+    - export FONTSPATH=/home3/newick/public_html/fonts
+    - /bin/mkdir -p $FONTSPATH
+    - /bin/cp -r ./fonts $FONTSPATH
+    - export DEPLOYPATH=/home3/newick/public_html/cours
+    - /bin/mkdir -p $DEPLOYPATH
+    - cd $DEPLOYPATH && rm -rf assets index.html
+    - /usr/bin/python3 ./build.py -s ./cours -o $DEPLOYPATH --title "Formations Urgences"
