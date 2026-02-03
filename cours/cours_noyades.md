@@ -16,34 +16,77 @@ level: DU / EIADE
 
 ## Définitions et Épidémiologie
 
-- Définition :
+- **Définitions**
 > Noyade : Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
-- 3ème cause de décès accidentel mondial : 294 000 morts/an
-- France : 1441 noyades/été, 34% de mortalité
-- Facteurs de risque : âge (enfants), sexe masculin, LMIC
+
+- ne comprend pas la notion de décès ni d'inhalation
+- phénomène **rapide** (quelques minutes) et **silencieux**
+
+> Importance de la prévention et de la surveillance
+
 
 :::details
 
-**Définition consensuelle OMS/ILCOR 2005:**
+**Définition OMS 2005:**
 > Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
 
 Cette définition englobe tout le spectre clinique, de l'épisode sans séquelle jusqu'au décès. Le terme « noyé » désigne exclusivement une personne décédée de noyade. Les anciennes terminologies (noyade sèche, quasi-noyade, near-drowning) sont abandonnées.
 
-**Épidémiologie mondiale:**
+> Noyé : personne décédée de noyade
 
-La noyade représente 7% des décès traumatiques mondiaux. L'âge médian des victimes est de 14 ans, conférant un impact majeur en années de vie perdues. 96% des décès surviennent dans les pays à revenus faibles/intermédiaires (LMIC). Dans les pays développés, la piscine individuelle est la première cause de noyade chez l'enfant de moins de 5 ans.
 
-**Données françaises (Santé Publique France 2015):**
-
-Sur 1441 noyades estivales : 88% accidentelles, 11,5% intentionnelles. Localisation : 50% en mer (dont 47% dans la bande des 300m), 24% en piscine, 22% en eaux intérieures.
-
-**Références:** van Beeck et al. Bull WHO 2005; Dicker et al. Lancet 2018
 
 :::questions
 
 - Quelle est la définition actuelle de la noyade selon l'OMS ?
 - Pourquoi les termes « noyade sèche » et « near-drowning » sont-ils abandonnés ?
+
+## Épidémiologie
+
+- 3ème cause de décès accidentel mondial : env. 300 000 morts/an (2021)
+- France : 1441 noyades/été, 34% de mortalité
+- Facteurs de risque : âge (enfants), sexe masculin, pays à revenus faibles/intermédiaires 
+
+:::details
+**Épidémiologie mondiale:**
+
+En 2021, il a été estimé que 300 000 personnes sont morte noyées dans le monde, en déclin de 4,6% par rapport à 2019. Le taux de décès par noyade à décru de 38% depuis l'an 2000. La noyade représente 7% des décès traumatiques mondiaux. L'âge médian des victimes est de 14 ans, conférant un impact majeur en années de vie perdues. Il y a une forte disparité mondiale : 92% des décès surviennent dans les pays à revenus faibles/intermédiaires. 
+
+D'autre part, la région Pacifique ouest est fortement impactée où la noyade est la principale cause de décès chez les 5-14 ans (toutes causes confondues).
+
+Dans les pays développés, la piscine individuelle est la première cause de noyade chez l'enfant de moins de 5 ans. Dans toutes les situations, les personnes de sexe masculins sont deux fois plus représentées, pour des raisons sociales (plus enclins aux activités qui sont à risque, comme la nage en eau libre, nager seul, consommer de l'alcool, ne pas porter de gilet de sauvetage, …).
+
+**Données françaises (Santé Publique France 2015):**
+
+Sur 1441 noyades estivales : 88% accidentelles, 11,5% intentionnelles. Localisation : 50% en mer (dont 47% dans la bande des 300m), 24% en piscine, 22% en eaux intérieures.
+
+**Références:** Global status report on drowning prevention 2024. Geneva: World Health Organization; 2024. van Beeck et al. Bull WHO 2005; Dicker et al. Lancet 2018
+
+:::questions
+
 - Quel est le lieu principal de noyade chez l'enfant en France ?
+
+## Lien avec le climat
+
+- Inondations : 75% des décès le sont par noyade
+- Vagues de chaleur : accroissement des décès (exposition + alcool)
+- Aggravation avec le changement climatique
+
+:::details
+
+**Inondations**
+
+Entre 2000 et 2019, les inondations ont représenté 44% des catastrophes. Cela touche particulièrement les pays à faibles revenus. Avec le changement climatique, il a été estimé que ce risque va doubler.  
+
+**Vagues de chaleur**
+
+En Australie, une augmentation de 18% des décès a été constaté pendant les vagues de chaleur. Cela est en lien avec une plus grande exposition, un consommation d'alcool, mais aussi à un changement des horaires de baignade (plus tôt ou plus tard), en dehors des périodes surveillées.
+
+**Références** 
+
+Peden AE, Mason HM, King JC, Franklin RC. *Examining the relationship between heatwaves and fatal drowning: a case study from Queensland, Australia.* Inj Prev. 2024;30(1):7–13. <a href="https://doi.org/10.1136/ip-2023-044938">doi.org/10.1136/ip-2023-044938</a>
+
+Sindall R, Mecrow T, Queiroga AC, Boyer C, Koon W, Peden AE. *Drowning risk and climate change: a state-of-the-art review.* Inj Prev. 2022;28(2):185–91. <a href="https://doi.org/10.1136/injuryprev-2021-044486">doi.org/10.1136/injuryprev-2021-044486</a>.
 
 ## Processus Physiopathologique de la Noyade
 
