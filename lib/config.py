@@ -20,6 +20,7 @@ SLIDE_TYPES = {
 MD_PREFIXES = {
     'h1': '# ',
     'h2': '## ',
+    'h3': '### ',
     'image': '### Image: ',
     'subtitle': '> ',
     'caption': 'Caption: ',

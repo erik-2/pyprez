@@ -101,6 +101,10 @@ def parse_presentation(md_content: str) -> Presentation:
             if current_slide:
                 current_slide.content.append({'type': 'blockquote', 'text': line[2:].strip()})
     
+        elif line.startswith(MD_PREFIXES['h3']) and current_section == 'main' :
+            if current_slide:
+                current_slide.content.append({'type': 'h3', 'text': line[len(MD_PREFIXES['h3']):].strip()})
+            just_after_title = False
         # Caption d'image
         elif line.startswith(MD_PREFIXES['caption']) and current_slide and current_slide.slide_type == SLIDE_TYPES['image']:
             current_slide.image_caption = line[len(MD_PREFIXES['caption']):].strip()

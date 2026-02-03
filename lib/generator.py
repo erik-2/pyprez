@@ -131,6 +131,9 @@ class HTMLGenerator:
             if isinstance(p, dict) and p.get('type') == 'blockquote':
                 text = format_markdown(p["text"])
                 points_html.append(f'                        <blockquote class="slide-blockquote">{text}</blockquote>')
+            elif isinstance(p, dict) and p.get('type') == 'h3':
+                text = format_markdown(p["text"])
+                points_html.append(f'                        <h3>{text}</h3>')
             elif isinstance(p, str):
                 p = format_markdown(p)
                 points_html.append(f'                        <li>{p}</li>')

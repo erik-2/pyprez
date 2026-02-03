@@ -16,8 +16,9 @@ level: DU / EIADE
 
 ## Définition 
 
-- **Définitions**
-> Noyade : Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
+### Noyade
+
+> Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
 
 - ne comprend pas la notion de décès ni d'inhalation
 - phénomène **rapide** (quelques minutes) et **silencieux**
@@ -88,7 +89,10 @@ Peden AE, Mason HM, King JC, Franklin RC. *Examining the relationship between he
 
 Sindall R, Mecrow T, Queiroga AC, Boyer C, Koon W, Peden AE. *Drowning risk and climate change: a state-of-the-art review.* Inj Prev. 2022;28(2):185–91. <a href="https://doi.org/10.1136/injuryprev-2021-044486">doi.org/10.1136/injuryprev-2021-044486</a>.
 
-## Processus Physiopathologique de la Noyade
+### Image: /images/boat_1.png
+Caption: Légende de l'image
+
+## Physiopathologie
 
 - Séquence rapide : lutte → apnée (<1 min) → inhalation → hypoxie
 - Volume critique : 1-2 mL/kg altère les échanges gazeux
@@ -219,7 +223,9 @@ La survenue de l'hydrocution n'est PAS favorisée par la digestion — cette cro
 - Grade 1 : auscultation normale + toux → mortalité 0%
 - Grade 2 : râles localisés → mortalité 1%
 - Grade 3 : OAP sans hypotension → mortalité 4-5%
-- Grade 4-6 : OAP + choc, arrêt respiratoire, ACR → 18-93%
+- Grade 4 : OAP + choc, 
+- Grade 5 : arrêt respiratoire
+- Grade 6 : ACR → 93%
 
 :::details
 
