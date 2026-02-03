@@ -57,8 +57,6 @@ ASSETS = {
     'fonts': "fonts",
 }
 
-# Fonts Google
-GOOGLE_FONTS_URL = "https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;500;700&display=swap"
 
 CSS_FONTS = '''
 /* crimson-pro-regular - latin */

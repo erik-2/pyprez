@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from .models import Slide, Presentation
-from .config import CSS_FONTS, GOOGLE_FONTS_URL, ASSETS, THEMES, DEFAULT_THEME
+from .config import CSS_FONTS, ASSETS, THEMES, DEFAULT_THEME
 
 
 def format_bold(text: str) -> str:
