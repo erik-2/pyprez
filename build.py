@@ -423,8 +423,8 @@ Exemples:
   python build.py --clean --title "Mes Formations"
         '''
     )
-    parser.add_argument('-s', '--source', type=Path, default=Path('.'),
-                        help='Dossier contenant les fichiers .md (défaut: .)')
+    parser.add_argument('-s', '--source', type=Path, default=Path('./cours'),
+                        help='Dossier contenant les fichiers .md (défaut: ./cours)')
     parser.add_argument('-o', '--output', type=Path, default=Path('./dist'),
                         help='Dossier de sortie (défaut: ./dist)')
     parser.add_argument('--title', type=str, default='Catalogue des Cours',

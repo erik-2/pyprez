@@ -3,6 +3,7 @@ title: Noyades et Traumatismes en Milieu Aquatique
 subtitle: Physiopathologie et prise en charge en urgence
 author: Éric Tellier 
 date: Mars 2026
+theme: ocean 
 university: Université de Bordeaux
 department: DU Prise en charge des situations urgentes
 level: DU / EIADE
