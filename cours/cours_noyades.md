@@ -16,7 +16,8 @@ level: DU / EIADE
 
 ## Définitions et Épidémiologie
 
-- Noyade : détresse respiratoire par submersion/immersion (OMS 2005)
+- Définition :
+> Noyade : Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
 - 3ème cause de décès accidentel mondial : 294 000 morts/an
 - France : 1441 noyades/été, 34% de mortalité
 - Facteurs de risque : âge (enfants), sexe masculin, LMIC
@@ -24,8 +25,9 @@ level: DU / EIADE
 :::details
 
 **Définition consensuelle OMS/ILCOR 2005:**
+> Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
 
-La noyade est définie comme « l'expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide ». Cette définition englobe tout le spectre clinique, de l'épisode sans séquelle jusqu'au décès. Le terme « noyé » désigne exclusivement une personne décédée de noyade. Les anciennes terminologies (noyade sèche, quasi-noyade, near-drowning) sont abandonnées.
+Cette définition englobe tout le spectre clinique, de l'épisode sans séquelle jusqu'au décès. Le terme « noyé » désigne exclusivement une personne décédée de noyade. Les anciennes terminologies (noyade sèche, quasi-noyade, near-drowning) sont abandonnées.
 
 **Épidémiologie mondiale:**
 

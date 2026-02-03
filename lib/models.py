@@ -13,7 +13,7 @@ class Slide:
     number: Optional[int] = None
     title: str = ""
     subtitle: str = ""
-    content: List[str] = field(default_factory=list)
+    content: List[str | dict] = field(default_factory=list)
     details: List[str] = field(default_factory=list)
     questions: List[str] = field(default_factory=list)
     has_annexes: bool = True

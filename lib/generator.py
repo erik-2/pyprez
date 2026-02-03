@@ -35,6 +35,11 @@ def format_detail_line(line: str) -> str:
                             <img src="{url}" alt="{alt}">
                             {caption}
                         </figure>'''
+
+    # Blockquote
+    if line.strip().startswith('> '):
+        content = format_markdown(line.strip()[2:])
+        return f'<blockquote class="detail-blockquote">{content}</blockquote>'
     
     # Texte normal avec formatage Markdown
     return f'<p>{format_markdown(line)}</p>'
@@ -126,8 +131,19 @@ class HTMLGenerator:
         # Subtitle
         subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
         
-        # Points clés
-        points = '\n'.join(f'                        <li>{p}</li>' for p in slide.content)
+        points_html = []
+        for p in slide.content:
+            if isinstance(p, dict) and p.get('type') == 'blockquote':
+                points_html.append(f'                        <blockquote class="slide-blockquote">{p["text"]}</blockquote>')
+            else:
+                points_html.append(f'                        <li>{p}</li>')
+
+        # Wrapper les <li> dans <ul> seulement s'il y en a
+        has_list_items = any(not isinstance(p, dict) for p in slide.content)
+        if has_list_items:
+            points = f'<ul class="key-points">\n' + '\n'.join(points_html) + '\n                    </ul>'
+        else:
+            points = '\n'.join(points_html)
         
         # Nav hint
         if max_view > 0:
@@ -293,6 +309,7 @@ class HTMLGenerator:
         .slides-grid { display: grid; grid-template-columns: repeat(3, 100vw); grid-auto-rows: 100vh; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         .slide { width: 100vw; height: 100vh; padding: 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; }
         .slide-main { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; }
+        .slide-main .slide-blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: rgba(255, 255, 255, 0.15); border-left: 4px solid rgba(255, 255, 255, 0.6); border-radius: 0 8px 8px 0; font-style: italic; font-size: clamp(1rem, 1.8vw, 1.3rem);}
         .slide-detail { background: var(--bg-detail); overflow-y: auto; justify-content: flex-start; }
         .slide-question { background: var(--bg-question); overflow-y: auto; justify-content: flex-start; }
         .slide-detail .content, .slide-question .content { padding-top: 4rem; padding-bottom: 6rem; }
@@ -310,6 +327,9 @@ class HTMLGenerator:
         .detail-image { margin: 2rem 0; text-align: center; }
         .detail-image img { max-width: 100%; max-height: 50vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .detail-image figcaption { margin-top: 0.75rem; font-size: 0.95rem; color: var(--text-light); font-style: italic; }
+        /* Blockquote dans les détails */
+        .detail-blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: rgba(10, 77, 104, 0.08); border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text); }
+        .detail-blockquote strong { font-style: normal; }
         .question-list { list-style: none; }
         .question-item { background: white; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 4px solid var(--warning); font-size: clamp(1rem, 1.8vw, 1.3rem); }
         .question-number { display: inline-block; background: var(--warning); color: white; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-weight: bold; margin-right: 1rem; }

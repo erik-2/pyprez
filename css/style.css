@@ -70,6 +70,16 @@ body {
   color: white;
 }
 
+.slide-main .slide-blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-left: 4px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+}
+
 .slide-detail {
   background: var(--bg-detail);
   justify-content: flex-start;
@@ -176,6 +186,21 @@ h2 {
   font-size: 0.95rem;
   color: var(--text-light);
   font-style: italic;
+}
+
+/* Blockquote dans les détails */
+.detail-blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: rgba(10, 77, 104, 0.08);
+  border-left: 4px solid var(--primary);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: var(--text);
+}
+
+.detail-blockquote strong {
+  font-style: normal;
 }
 
 /* Questions */

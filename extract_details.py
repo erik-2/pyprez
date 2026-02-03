@@ -120,6 +120,12 @@ def _generate_section(section, idx: int) -> str:
                 <img src="{url}" alt="{alt}">
                 {caption}
             </figure>''')
+        elif detail['type'] == 'blockquote':
+            if current_list:
+                content_parts.append('</ul>')
+                current_list = False
+            content = format_markdown(detail['content'])
+            content_parts.append(f'<blockquote class="detail-blockquote">{content}</blockquote>')
         
         else:  # paragraph
             if current_list:
@@ -211,6 +217,14 @@ def _get_details_css() -> str:
         .detail-image {
             margin: 1.5rem 0;
             text-align: center;
+        }
+        .detail-blockquote {
+            margin: 1.5rem 0;
+            padding: 1rem 1.5rem;
+            background: rgba(10, 77, 104, 0.08);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 4px 4px 0;
+            font-style: italic;
         }
         .detail-image img {
             max-width: 100%;
