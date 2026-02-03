@@ -1,12 +1,12 @@
 ---
-title: La Pendaison
+title: Pendaison et strangulation
 subtitle: Physiopathologie et Prise en Charge
-author: Dr Éric Tellier
+author: Éric Tellier
 theme: bordeaux
-date: Mars 2025
+date: Mars 2026
 university: Université de Bordeaux
 department: DU Prise en charge des situations urgentes
-level: DU / DESC
+level: DU / EIADE 
 ---
 
 # La Pendaison
