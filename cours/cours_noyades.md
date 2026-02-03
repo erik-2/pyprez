@@ -14,7 +14,7 @@ level: DU / EIADE
 
 :::no-annexes
 
-## Définitions et Épidémiologie
+## Définition 
 
 - **Définitions**
 > Noyade : Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
