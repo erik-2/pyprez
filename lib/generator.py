@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 
 from .models import Slide, Presentation
-from .config import GOOGLE_FONTS_URL, ASSETS, THEMES, DEFAULT_THEME
+from .config import CSS_FONTS, GOOGLE_FONTS_URL, ASSETS, THEMES, DEFAULT_THEME
 
 
 def format_bold(text: str) -> str:
@@ -61,7 +61,6 @@ class HTMLGenerator:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{presentation.title}</title>
-    <link href="{GOOGLE_FONTS_URL}" rel="stylesheet">
     <style>
 {css}
     </style>
@@ -250,6 +249,8 @@ class HTMLGenerator:
             css = css_path.read_text(encoding='utf-8')
         else:
             css = self._default_css()
+
+        css += CSS_FONTS
         
         # Appliquer les couleurs du thème
         css = css.replace('#0a4d68', colors['primary'])

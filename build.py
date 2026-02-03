@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import List, Dict
 
 from lib import parse_presentation, HTMLGenerator, THEMES, DEFAULT_THEME
+from lib.config import CSS_FONTS
 
 
 def get_course_metadata(md_file: Path) -> Dict:
@@ -128,8 +129,8 @@ def generate_index(courses: List[Dict], output_dir: Path, site_title: str = "Cat
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{site_title}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        {CSS_FONTS}
         :root {{
             --bg: #f8fafc;
             --bg-card: #ffffff;
@@ -348,6 +349,13 @@ def copy_assets(output_dir: Path, source_dir: Path):
     js_src = source_dir / 'js' / 'presentation.js'
     if js_src.exists():
         shutil.copy(js_src, assets_dir / 'presentation.js')
+
+    fonts_src = source_dir / 'fonts'
+    if fonts_src.exists():
+        fonts_dst = output_dir / 'fonts'
+        if fonts_dst.exists():
+            shutil.rmtree(fonts_dst)
+        shutil.copytree(fonts_src, fonts_dst)
 
 
 def build(
