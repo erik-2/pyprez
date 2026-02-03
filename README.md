@@ -8,7 +8,9 @@ Transforme des fichiers Markdown structurés en présentations HTML interactives
 - **Slides de détails** pour approfondir (texte, images)
 - **Slides de questions** pour la révision
 - **Navigation** : flèches clavier + swipe tactile
+- **Thèmes** : ocean, glacier, bordeaux
 - **Export document** : extraction des détails en HTML imprimable/PDF
+- **Catalogue** : génération automatique d'un index des cours
 
 ## Installation
 
@@ -21,16 +23,12 @@ Aucune dépendance externe requise (Python 3.10+).
 
 ## Utilisation
 
-### Compiler une présentation
+### Compiler un seul cours
 
 ```bash
 python compile_cours.py mon_cours.md
-```
-
-Options :
-```bash
 python compile_cours.py mon_cours.md -o presentation.html
-python compile_cours.py mon_cours.md --js-uri https://cdn.example.com/nav.js
+python compile_cours.py mon_cours.md --theme glacier
 ```
 
 ### Extraire les détails (document imprimable)
@@ -39,7 +37,67 @@ python compile_cours.py mon_cours.md --js-uri https://cdn.example.com/nav.js
 python extract_details.py mon_cours.md
 ```
 
-Génère `mon_cours_details.html` avec table des matières et bouton d'impression.
+### Build complet (tous les cours + catalogue)
+
+```bash
+python build.py                              # Compile ./*.md → ./dist/
+python build.py -s sources/ -o public/       # Dossiers personnalisés
+python build.py --clean --title "Mes Cours"  # Nettoie et titre custom
+```
+
+Structure générée :
+```
+dist/
+├── index.html              # Catalogue des cours
+├── assets/
+│   ├── style.css
+│   └── presentation.js
+├── noyade/
+│   ├── index.html          # Présentation
+│   └── details.html        # Document imprimable
+└── hypothermie/
+    ├── index.html
+    └── details.html
+```
+
+### Déployer vers un serveur FTP
+
+```bash
+python deploy.py --host ftp.example.com --user admin
+```
+
+Ou avec un fichier `.env` :
+```env
+FTP_HOST=ftp.example.com
+FTP_USER=admin
+FTP_PASSWORD=secret
+FTP_PATH=/public_html/cours
+```
+
+## Workflow recommandé
+
+```bash
+# 1. Éditer les cours .md
+vim mon_cours.md
+
+# 2. Build local
+python build.py --clean
+
+# 3. Prévisualiser
+open dist/index.html
+
+# 4. Déployer
+python deploy.py
+```
+
+### Avec Git + cPanel
+
+1. Créer un repo Git avec vos fichiers `.md`
+2. Dans cPanel > Git Version Control, cloner le repo
+3. Ajouter un cron job :
+   ```bash
+   cd /home/user/cours && git pull && python build.py -o /home/user/public_html/cours
+   ```
 
 ## Navigation dans la présentation
 
@@ -51,18 +109,28 @@ Génère `mon_cours_details.html` avec table des matières et bouton d'impressio
 | Voir questions | → (depuis détails) | Swipe gauche |
 | Retour | ← | Swipe droite |
 
+## Thèmes
+
+| Thème | Couleurs | Usage suggéré |
+|-------|----------|---------------|
+| `ocean` | Bleu-vert turquoise | Noyade, milieu aquatique |
+| `glacier` | Bleu froid | Hypothermie, froid |
+| `bordeaux` | Rouge sombre | Trauma, pendaison |
+
 ## Structure du projet
 
 ```
 cours/
-├── compile_cours.py      # Compilateur principal
+├── build.py              # Build tous les cours + index
+├── deploy.py             # Déploiement FTP
+├── compile_cours.py      # Compilateur unitaire
 ├── extract_details.py    # Extracteur de détails
 ├── css/
-│   └── style.css         # Styles de la présentation
+│   └── style.css
 ├── js/
-│   └── presentation.js   # Navigation interactive
+│   └── presentation.js
 └── lib/
-    ├── config.py         # Configuration (marqueurs, etc.)
+    ├── config.py         # Thèmes, marqueurs
     ├── models.py         # Modèles de données
     ├── parser.py         # Parser Markdown
     └── generator.py      # Générateur HTML
