@@ -10,11 +10,6 @@ from .models import Slide, Presentation
 from .config import CSS_FONTS, ASSETS, THEMES, DEFAULT_THEME
 
 
-def format_bold(text: str) -> str:
-    """Convertit **texte** en <strong>texte</strong>"""
-    return re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', text)
-
-
 def format_markdown(text: str) -> str:
     """Convertit le Markdown simple en HTML"""
     text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', text)  # Gras
@@ -134,9 +129,13 @@ class HTMLGenerator:
         points_html = []
         for p in slide.content:
             if isinstance(p, dict) and p.get('type') == 'blockquote':
-                points_html.append(f'                        <blockquote class="slide-blockquote">{p["text"]}</blockquote>')
-            else:
+                text = format_markdown(p["text"])
+                points_html.append(f'                        <blockquote class="slide-blockquote">{text}</blockquote>')
+            elif isinstance(p, str):
+                p = format_markdown(p)
                 points_html.append(f'                        <li>{p}</li>')
+            else:
+                raise TypeError
 
         # Wrapper les <li> dans <ul> seulement s'il y en a
         has_list_items = any(not isinstance(p, dict) for p in slide.content)
