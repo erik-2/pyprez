@@ -190,7 +190,7 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
 def _parse_detail_line(line: str) -> Dict[str, str]:
     """Parse une ligne de détail et retourne son type et contenu"""
     import re
-    
+   
     # Image Markdown: ![légende](url)
     img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)$', line)
     if img_match:
@@ -215,6 +215,14 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     # Blockquote: > texte
     if line.startswith('> '):
         return {'type': 'blockquote', 'content': line[2:]}
+
+    # Référence: [@ref auteurs="..." titre="..." ...]
+    ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
+    if ref_match:
+        attrs = {}
+        for m in re.finditer(r'(\w+)="([^"]*)"', ref_match.group(1)):
+            attrs[m.group(1)] = m.group(2)
+        return {'type': 'reference', **attrs}
     
     # Paragraphe normal
     return {'type': 'paragraph', 'content': line}

@@ -249,6 +249,24 @@ h2 {
   color: white;
 }
 
+.slide-main .slide-image {
+  max-width: calc(100vw - 4rem);
+  max-height: calc(100vh - 8rem);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.slide-main .image-caption {
+  position: absolute;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  opacity: 0.9;
+  text-align: center;
+}
+
 .slide-detail .position-indicator,
 .slide-question .position-indicator {
   position: fixed;
