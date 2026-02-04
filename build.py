@@ -359,6 +359,7 @@ def copy_assets(output_dir: Path, source_dir: Path):
         shutil.copytree(fonts_src, fonts_dst)
 
 
+
 def build(
     source_dir: Path,
     output_dir: Path,
@@ -387,6 +388,17 @@ def build(
         return
     
     print(f"📚 {len(md_files)} cours trouvés")
+
+    #Trouver les images
+    img_dst = output_dir / 'images'
+    images_extensions = ["svg","png","jpg","jpeg","webm"]
+    total_images = 0
+    for ext in images_extensions:
+        img_files = list(source_dir.glob(f"*.{ext}"))
+        for img in img_files:
+            total_images += 1
+            shutil.copy(img, img_dst)
+    print(f" {total_images} images copiée(s)")
     
     # Copier les assets
     print("📦 Copie des assets...")

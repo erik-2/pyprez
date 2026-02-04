@@ -251,7 +251,7 @@ class HTMLGenerator:
             <div class="slide slide-main" data-no-annexes="true">
                 <div class="position-indicator">{slide.number} / {total}</div>
                 <div class="content">
-                    <img src="{slide.image_url}" style="width: 100%; max-height: 80vh; object-fit: contain;">
+                    <img src="/images/{slide.image_url}" style="width: 100%; max-height: 80vh; object-fit: contain;">
                     {caption}
                 </div>
                 <div class="nav-hint">
