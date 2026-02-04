@@ -27,8 +27,8 @@ const PresentationNav = (function() {
         while (i < allSlides.length) {
             const mainSlide = allSlides[i];
             
-            if (!mainSlide.classList.contains('slide-main')) {
-                i++;
+            if (!mainSlide.classList.contains('slide-main') && !mainSlide.classList.contains('slide-section')) {
+               i++;
                 continue;
             }
             
@@ -38,6 +38,8 @@ const PresentationNav = (function() {
                 maxView = 0;
             } else if (mainSlide.dataset.maxView === '1') {
                 maxView = 1;
+            } else if (mainSlide.classList.contains('slide-section')) {
+               maxView = 0;
             }
             
             const group = {

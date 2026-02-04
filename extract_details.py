@@ -15,12 +15,11 @@ from pathlib import Path
 from datetime import datetime
 
 from lib import parse_details_only, format_markdown
-
-
 def generate_details_document(metadata: dict, sections: list) -> str:
     """Génère le document HTML des détails"""
     
     title = metadata.get('title', 'Document de Cours')
+    subtitle = metadata.get('subtitle', '')
     author = metadata.get('author', '')
     university = metadata.get('university', '')
     date = metadata.get('date', datetime.now().strftime('%Y-%m-%d'))
@@ -34,18 +33,11 @@ def generate_details_document(metadata: dict, sections: list) -> str:
     meta_parts.append(f'<span>•</span><span>{date}</span>')
     metadata_html = '\n            '.join(meta_parts)
     
-    # Table des matières
-    toc_items = []
-    for idx, section in enumerate(sections):
-        indent = "  " * (section.level - 1)
-        toc_items.append(f'{indent}<li><a href="#section-{idx}">{section.title}</a></li>')
-    toc_html = '\n            '.join(toc_items)
+    # Table des matières hiérarchique
+    toc_html = _generate_toc(sections)
     
     # Sections
-    sections_html = []
-    for idx, section in enumerate(sections):
-        section_html = _generate_section(section, idx)
-        sections_html.append(section_html)
+    sections_html = _generate_sections_html(sections)
     
     return f'''<!DOCTYPE html>
 <html lang="fr">
@@ -53,6 +45,7 @@ def generate_details_document(metadata: dict, sections: list) -> str:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title} - Notes Détaillées</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a4d68'/><path d='M14 8h4v16h-4zM8 14h16v4H8z' fill='%23ffffff'/></svg>">
     <style>
 {_get_details_css()}
     </style>
@@ -60,7 +53,7 @@ def generate_details_document(metadata: dict, sections: list) -> str:
 <body>
     <div class="header">
         <h1>{title}</h1>
-        <div class="subtitle">Notes Détaillées</div>
+        <div class="subtitle">{subtitle}</div>
         <div class="metadata">
             {metadata_html}
         </div>
@@ -68,13 +61,11 @@ def generate_details_document(metadata: dict, sections: list) -> str:
     
     <div class="toc no-print">
         <h2>📚 Table des Matières</h2>
-        <ul>
-            {toc_html}
-        </ul>
+        {toc_html}
     </div>
     
     <div class="content">
-{''.join(sections_html)}
+{sections_html}
     </div>
     
     <div class="footer">
@@ -87,28 +78,58 @@ def generate_details_document(metadata: dict, sections: list) -> str:
 </html>'''
 
 
-def format_reference_html(attrs: dict) -> str:
-    """Formate une référence bibliographique"""
-    parts = []
-    if attrs.get('auteurs'):
-        parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
-    if attrs.get('titre'):
-        parts.append(f'<em class="ref-titre">{attrs["titre"]}</em>')
-    if attrs.get('revue'):
-        parts.append(f'<span class="ref-revue">{attrs["revue"]}</span>')
-    if attrs.get('date'):
-        parts.append(f'<span class="ref-date">{attrs["date"]}</span>')
-    if attrs.get('doi'):
-        doi = attrs["doi"]
-        parts.append(f'<a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>')
+def _generate_toc(sections: list) -> str:
+    """Génère la table des matières hiérarchique"""
+    toc_parts = ['<ul class="toc-list">']
+    current_section_idx = 0
     
-    return f'<p class="reference">{". ".join(parts)}.</p>'
+    for section in sections:
+        if section.level == 1:
+            # Fermer la sous-liste précédente si existante
+            if current_section_idx > 0:
+                toc_parts.append('</ul></li>')
+            toc_parts.append(f'<li class="toc-section"><a href="#section-{section.title.lower().replace(" ", "-")}">{section.title}</a>')
+            toc_parts.append('<ul class="toc-subsections">')
+            current_section_idx += 1
+        else:
+            toc_parts.append(f'<li><a href="#subsection-{section.title.lower().replace(" ", "-")}">{section.title}</a></li>')
+    
+    if current_section_idx > 0:
+        toc_parts.append('</ul></li>')
+    toc_parts.append('</ul>')
+    
+    return '\n            '.join(toc_parts)
 
 
-def _generate_section(section, idx: int) -> str:
-    """Génère le HTML d'une section"""
-    level_class = f"level-{section.level}"
+def _generate_sections_html(sections: list) -> str:
+    """Génère le HTML des sections avec hiérarchie"""
+    html_parts = []
     
+    for section in sections:
+        if section.level == 1:
+            # Section principale
+            section_id = section.title.lower().replace(" ", "-")
+            html_parts.append(f'''
+        <div class="main-section" id="section-{section_id}">
+            <h1 class="section-title level-1">{section.title}</h1>
+        </div>''')
+        else:
+            # Sous-section avec détails
+            section_id = section.title.lower().replace(" ", "-")
+            content_html = _generate_section_content(section)
+            html_parts.append(f'''
+        <div class="sub-section" id="subsection-{section_id}">
+            <h2 class="section-title level-2">{section.title}</h2>
+            <div class="section-content">
+                {content_html}
+            </div>
+        </div>''')
+    
+    return '\n'.join(html_parts)
+
+
+def _generate_section_content(section) -> str:
+    """Génère le contenu d'une sous-section"""
     content_parts = []
     current_list = False
     
@@ -133,24 +154,27 @@ def _generate_section(section, idx: int) -> str:
                 current_list = False
             alt = detail.get('alt', '')
             url = detail.get('url', '')
+            if not url.startswith(('http://', 'https://', '/')):
+                url = f'/images/{url}'
             caption = f'<figcaption>{alt}</figcaption>' if alt else ''
             content_parts.append(f'''<figure class="detail-image">
                 <img src="{url}" alt="{alt}">
                 {caption}
             </figure>''')
+        
         elif detail['type'] == 'blockquote':
             if current_list:
                 content_parts.append('</ul>')
                 current_list = False
             content = format_markdown(detail['content'])
             content_parts.append(f'<blockquote class="detail-blockquote">{content}</blockquote>')
-
+        
         elif detail['type'] == 'reference':
             if current_list:
                 content_parts.append('</ul>')
                 current_list = False
             content_parts.append(format_reference_html(detail))
-
+        
         else:  # paragraph
             if current_list:
                 content_parts.append('</ul>')
@@ -161,16 +185,25 @@ def _generate_section(section, idx: int) -> str:
     if current_list:
         content_parts.append('</ul>')
     
-    content_html = '\n                '.join(content_parts)
+    return '\n                '.join(content_parts)
+
+
+def format_reference_html(attrs: dict) -> str:
+    """Formate une référence bibliographique"""
+    parts = []
+    if attrs.get('auteurs'):
+        parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
+    if attrs.get('titre'):
+        parts.append(f'<em class="ref-titre">{attrs["titre"]}</em>')
+    if attrs.get('revue'):
+        parts.append(f'<span class="ref-revue">{attrs["revue"]}</span>')
+    if attrs.get('date'):
+        parts.append(f'<span class="ref-date">{attrs["date"]}</span>')
+    if attrs.get('doi'):
+        doi = attrs["doi"]
+        parts.append(f'<a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>')
     
-    return f'''
-        <div class="section" id="section-{idx}">
-            <h2 class="section-title {level_class}">{section.title}</h2>
-            <div class="section-content">
-                {content_html}
-            </div>
-        </div>
-'''
+    return f'<p class="reference">{". ".join(parts)}.</p>'
 
 
 def _get_details_css() -> str:
@@ -233,6 +266,67 @@ def _get_details_css() -> str:
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--border);
         }
+        /* Sections principales */
+.main-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 3px solid var(--primary);
+}
+
+.main-section:first-child {
+  margin-top: 0;
+  border-top: none;
+}
+
+.section-title.level-1 {
+  font-size: 2rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+}
+
+/* Sous-sections */
+.sub-section {
+  margin-bottom: 2.5rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+}
+
+.section-title.level-2 {
+  font-size: 1.5rem;
+  color: var(--secondary);
+  margin-bottom: 1rem;
+}
+
+/* Table des matières hiérarchique */
+.toc-list {
+  list-style: none;
+}
+
+.toc-section {
+  margin-bottom: 0.75rem;
+}
+
+.toc-section > a {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.toc-subsections {
+  list-style: none;
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.toc-subsections li {
+  margin-bottom: 0.25rem;
+}
+
+.toc-subsections a {
+  color: var(--secondary);
+  font-weight: 400;
+}
         .section-title.level-1 { font-size: 2rem; color: var(--secondary); text-transform: uppercase; letter-spacing: 1px; }
         .section-content { padding-left: 1rem; }
         .detail-subtitle { font-size: 1.2rem; color: var(--secondary); font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.8rem; }

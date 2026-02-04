@@ -33,51 +33,61 @@ def parse_presentation(md_content: str) -> Presentation:
     
     # Parser les métadonnées
     metadata, i = parse_metadata(lines, 0)
-    just_after_title = False 
+    
+    # Créer la slide de titre depuis les métadonnées
+    if metadata.get('title'):
+        title_slide = Slide(
+            slide_type=SLIDE_TYPES['title'],
+            title=metadata.get('title', ''),
+            subtitle=metadata.get('subtitle', ''),
+            has_annexes=False
+        )
+        slides.append(title_slide)
+    
+    just_after_title = False
+    
     # Parser les slides
     while i < len(lines):
         line = lines[i].strip()
         
-        # Nouvelle slide de titre (# )
-        if line.startswith(MD_PREFIXES['h1']):
+        # Nouvelle section (# )
+        if line.startswith(MD_PREFIXES['h1']) and not line.startswith(MD_PREFIXES['h2']):
             if current_slide:
                 slides.append(current_slide)
             current_slide = Slide(
-                slide_type=SLIDE_TYPES['title'],
+                slide_type=SLIDE_TYPES['section'],
                 title=line[len(MD_PREFIXES['h1']):].strip(),
                 has_annexes=False
             )
             current_section = 'main'
             just_after_title = True
+        
         # Nouvelle slide d'image (## Image: )
         elif line.startswith(MD_PREFIXES['image']):
             if current_slide:
                 slides.append(current_slide)
             current_slide = Slide(
                 slide_type=SLIDE_TYPES['image'],
-                number=len(slides) + 1,
+                number=sum(1 for s in slides if s.slide_type in ('content', 'image')) + 1,
                 title=line[len(MD_PREFIXES['image']):].strip(),
                 has_annexes=True
             )
             current_section = 'main'
-            just_after_title = True 
+            just_after_title = True
         
-
         # Nouvelle slide de contenu (## )
         elif line.startswith(MD_PREFIXES['h2']):
             if current_slide:
                 slides.append(current_slide)
             current_slide = Slide(
                 slide_type=SLIDE_TYPES['content'],
-                number=len(slides) + 1,
+                number=sum(1 for s in slides if s.slide_type in ('content', 'image')) + 1,
                 title=line[len(MD_PREFIXES['h2']):].strip()
             )
             current_section = 'main'
             just_after_title = True
-
-
         
-                # Section détails
+        # Section détails
         elif line == MARKERS['details']:
             current_section = 'details'
         
@@ -92,27 +102,29 @@ def parse_presentation(md_content: str) -> Presentation:
         
         # Sous-titre (> ) seulement juste après le titre
         elif line.startswith('> ') and current_section == 'main' and just_after_title:
-            if current_slide and current_slide.slide_type == SLIDE_TYPES['content']:
-                current_slide.subtitle = line[2:].strip()
-            elif current_slide and current_slide.slide_type == SLIDE_TYPES['title']:
-                current_slide.subtitle = line[2:].strip()
-            elif current_slide and current_slide.slide_type == SLIDE_TYPES['image']:
-                current_slide.image_url = line[2:].strip()
-            just_after_title = False  # AJOUTER
-
+            if current_slide:
+                if current_slide.slide_type == SLIDE_TYPES['image']:
+                    current_slide.image_url = line[2:].strip()
+                else:
+                    current_slide.subtitle = line[2:].strip()
+            just_after_title = False
+        
         # Blockquote (> ) ailleurs dans main
         elif line.startswith('> ') and current_section == 'main' and not just_after_title:
             if current_slide:
                 current_slide.content.append({'type': 'blockquote', 'text': line[2:].strip()})
-    
-        elif line.startswith(MD_PREFIXES['h3']) and current_section == 'main' :
+        
+        # H3 dans main
+        elif line.startswith(MD_PREFIXES['h3']) and current_section == 'main':
             if current_slide:
                 current_slide.content.append({'type': 'h3', 'text': line[len(MD_PREFIXES['h3']):].strip()})
             just_after_title = False
+        
         # Caption d'image
         elif line.startswith(MD_PREFIXES['caption']) and current_slide and current_slide.slide_type == SLIDE_TYPES['image']:
             current_slide.image_caption = line[len(MD_PREFIXES['caption']):].strip()
             just_after_title = False
+        
         # Points de liste (- ou *)
         elif line.startswith(MD_PREFIXES['list_item'][0]) or line.startswith(MD_PREFIXES['list_item'][1]):
             just_after_title = False
@@ -138,12 +150,12 @@ def parse_presentation(md_content: str) -> Presentation:
     
     return Presentation(metadata=metadata, slides=slides)
 
-
 def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
-    """Parse le Markdown et extrait uniquement les sections avec détails"""
+    """Parse le Markdown et extrait les sections avec hiérarchie"""
     lines = md_content.split('\n')
     sections = []
     current_section = None
+    current_main_section = None
     in_details = False
     
     # Parser les métadonnées
@@ -153,22 +165,28 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
     while i < len(lines):
         line = lines[i].strip()
         
-        # Nouveau titre de section
-        if line.startswith('#'):
-
+        # Section principale (# )
+        if line.startswith('# ') and not line.startswith('## '):
             if current_section and current_section.details:
                 sections.append(current_section)
             
-            # Déterminer le niveau
+            title = line[2:].strip()
+            current_main_section = Section(title=title, level=1)
+            sections.append(current_main_section)
+            current_section = None
+            in_details = False
+        
+        # Sous-section (## ) ou Image (## Image:)
+        elif line.startswith('## '):
+            if current_section and current_section.details:
+                sections.append(current_section)
+            
             if line.startswith(MD_PREFIXES['image']):
-                level=2
                 title = line[len(MD_PREFIXES['image']):].strip()
             else:
-                level = 0
-                while level < len(line) and line[level] == '#':
-                    level += 1
-                title = line[level:].strip()
-            current_section = Section(title=title, level=level)
+                title = line[3:].strip()
+            
+            current_section = Section(title=title, level=2)
             in_details = False
         
         # Section détails

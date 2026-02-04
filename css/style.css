@@ -298,6 +298,30 @@ h2 {
   font-family: monospace;
 }
 
+/* Slide de section (transition) */
+.slide-section {
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  color: white;
+  text-align: center;
+}
+
+.slide-section h1 {
+  font-size: clamp(3rem, 8vw, 6rem);
+  margin-bottom: 1rem;
+}
+
+.slide-section .subtitle {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  opacity: 0.85;
+}
+
+.slide-section .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .slide-detail .key-icon,
 .slide-question .key-icon {
   background: rgba(0, 0, 0, 0.1);
@@ -388,4 +412,5 @@ h2 {
     align-items: flex-end;
     gap: 0.5rem;
   }
+
 }

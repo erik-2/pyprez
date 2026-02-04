@@ -14,6 +14,7 @@ SLIDE_TYPES = {
     'title': 'title',
     'content': 'content',
     'image': 'image',
+    'section': 'section'
 }
 
 # Préfixes Markdown

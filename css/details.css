@@ -109,6 +109,68 @@
    margin: 0 1rem;
  }
 
+ /* Sections principales */
+ .main-section {
+   margin-top: 3rem;
+   padding-top: 2rem;
+   border-top: 3px solid var(--primary);
+ }
+
+ .main-section:first-child {
+   margin-top: 0;
+   border-top: none;
+ }
+
+ .section-title.level-1 {
+   font-size: 2rem;
+   color: var(--primary);
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   margin-bottom: 1.5rem;
+ }
+
+ /* Sous-sections */
+ .sub-section {
+   margin-bottom: 2.5rem;
+   padding-left: 1rem;
+   border-left: 3px solid var(--accent);
+ }
+
+ .section-title.level-2 {
+   font-size: 1.5rem;
+   color: var(--secondary);
+   margin-bottom: 1rem;
+ }
+
+ /* Table des matières hiérarchique */
+ .toc-list {
+   list-style: none;
+ }
+
+ .toc-section {
+   margin-bottom: 0.75rem;
+ }
+
+ .toc-section>a {
+   font-weight: 600;
+   color: var(--primary);
+ }
+
+ .toc-subsections {
+   list-style: none;
+   margin-left: 1.5rem;
+   margin-top: 0.5rem;
+ }
+
+ .toc-subsections li {
+   margin-bottom: 0.25rem;
+ }
+
+ .toc-subsections a {
+   color: var(--secondary);
+   font-weight: 400;
+ }
+
  .toc {
    background: var(--bg-section);
    border-left: 4px solid var(--accent);

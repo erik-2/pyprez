@@ -112,17 +112,34 @@ class HTMLGenerator:
         """Génère le HTML de toutes les slides"""
         html_parts = []
         total = presentation.total_slides
-        
+    
         for slide in presentation.slides:
             if slide.slide_type == 'title':
                 html_parts.append(self._slide_title(slide))
+            elif slide.slide_type == 'section':
+                html_parts.append(self._slide_section(slide))
             elif slide.slide_type == 'content':
                 html_parts.append(self._slide_content(slide, total))
             elif slide.slide_type == 'image':
                 html_parts.append(self._slide_image(slide, total))
-        
-        return '\n'.join(html_parts)
     
+        return '\n'.join(html_parts)
+
+    def _slide_section(self, slide: Slide) -> str:
+        """Génère une slide de section (transition)"""
+        subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
+        return f'''
+                <!-- SLIDE SECTION -->
+                <div class="slide slide-section" data-no-annexes="true">
+                    <div class="content">
+                        <h1>{slide.title}</h1>
+                        {subtitle}
+                    </div>
+                    <div class="nav-hint">
+                        <span><span class="key-icon">↓</span> Continuer</span>
+                    </div>
+                </div>'''
+        
     def _slide_title(self, slide: Slide) -> str:
         """Génère une slide de titre"""
         subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
@@ -376,7 +393,10 @@ class HTMLGenerator:
         .slide-main .image-caption {position: absolute;bottom: 1rem;left: 50%;transform: translateX(-50%);font-size: 1rem;opacity: 0.9;text-align: center;}
         .slide-main .slide-image {max-width: calc(100vw - 4rem);max-height: calc(100vh - 8rem);width: auto;height: auto;object-fit: contain;}
         .slide-detail { background: var(--bg-detail); overflow-y: auto; justify-content: flex-start; }
-
+        .slide-section { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); color: white; text-align: center; }
+        .slide-section h1 { font-size: clamp(3rem, 8vw, 6rem); margin-bottom: 1rem; }
+        .slide-section .subtitle { font-size: clamp(1.2rem, 3vw, 2rem); opacity: 0.85; }
+        .slide-section .content { display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .slide-question { background: var(--bg-question); overflow-y: auto; justify-content: flex-start; }
         .slide-detail .content, .slide-question .content { padding-top: 4rem; padding-bottom: 6rem; }
         h1 { font-family: 'Crimson Pro', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 700; margin-bottom: 2rem; line-height: 1.1; }

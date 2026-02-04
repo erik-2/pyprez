@@ -1,6 +1,6 @@
 ---
-title: Noyades et Traumatismes en Milieu Aquatique
-subtitle: Physiopathologie et prise en charge en urgence
+title: Urgences en milieu aquatique 
+subtitle: Physiopathologie et prise en charge. Hors plongée
 author: Éric Tellier 
 date: Mars 2026
 theme: ocean 
@@ -9,14 +9,10 @@ department: DU Prise en charge des situations urgentes
 level: DU / EIADE
 ---
 
-# Noyades et Traumatismes en Milieu Aquatique
-> De la physiopathologie à la prise en charge pré-hospitalière et hospitalière
 
-:::no-annexes
+# Noyade 
 
-## Définition 
-
-### Noyade
+## Définition
 
 > Expérience d'une détresse respiratoire secondaire à une submersion ou une immersion dans un liquide. 
 
@@ -35,8 +31,14 @@ Cette définition englobe tout le spectre clinique, de l'épisode sans séquelle
 
 > Noyé : personne décédée de noyade
 
+Le terme  "noyade sèche" étaient anciennement utilisé, mais sans définition précise. Il est à noté que le laryngospasme représenterait moins de 2% des causes de décès. Qu'il y inhalation ou non, la prise en charge est la même.
 
+Le terme *noyade secondaire* seul est imprécis et on lui préfèrera *noyade secondaire à un traumatisme* ou *noyade secondaire à un accident de plongée*, etc.
 
+**Références** 
+[@ref auteurs="D. Szpilman, J.J.L.M. Bierens, A.J. Handley, J.P. Orlowski" titre="Drowning" revue="NEJM" date="2012" doi="10.1056/NEJMra1013317"]
+[@ref auteurs="D. Szpilman, P.J. Morgan" titre="Management for the Drowning Patient" revue="Chest" date="2021" doi="10.1016/j.chest.2020.10.007"]
+[@ref auteurs="D. Szpilman" titre="'Dry drowning' and other myths" revue="Cleveland Clinic Journal of Medicine" date="2018"]
 :::questions
 
 - Quelle est la définition actuelle de la noyade selon l'OMS ?
@@ -44,24 +46,27 @@ Cette définition englobe tout le spectre clinique, de l'épisode sans séquelle
 
 ## Épidémiologie
 
-- 3ème cause de décès accidentel mondial : env. 300 000 morts/an (2021)
-- France : 1441 noyades/été, 34% de mortalité
+- 3ème cause de décès accidentel mondial : env. 300&nbsp;000 morts/an (2021)
+- > 90% dans les pays à revenus faibles et intermédiaires
+- France : 1780 noyades/été, 34% de mortalité (mer > eau douce > piscines privées)
 - Facteurs de risque : âge (enfants), sexe masculin, pays à revenus faibles/intermédiaires 
 
 :::details
 **Épidémiologie mondiale:**
 
-En 2021, il a été estimé que 300 000 personnes sont morte noyées dans le monde, en déclin de 4,6% par rapport à 2019. Le taux de décès par noyade à décru de 38% depuis l'an 2000. La noyade représente 7% des décès traumatiques mondiaux. L'âge médian des victimes est de 14 ans, conférant un impact majeur en années de vie perdues. Il y a une forte disparité mondiale : 92% des décès surviennent dans les pays à revenus faibles/intermédiaires. 
+En 2021, il a été estimé que 300&nbsp;000 personnes sont morte noyées dans le monde, en déclin de 4,6% par rapport à 2019. Le taux de décès par noyade à décru de 38% depuis l'an 2000. La noyade représente 7% des décès traumatiques mondiaux. L'âge médian des victimes est de 14 ans, conférant un impact majeur en années de vie perdues. Il y a une forte disparité mondiale : 92% des décès surviennent dans les pays à revenus faibles ou intermédiaires. 
 
 D'autre part, la région Pacifique ouest est fortement impactée où la noyade est la principale cause de décès chez les 5-14 ans (toutes causes confondues).
 
 Dans les pays développés, la piscine individuelle est la première cause de noyade chez l'enfant de moins de 5 ans. Dans toutes les situations, les personnes de sexe masculins sont deux fois plus représentées, pour des raisons sociales (plus enclins aux activités qui sont à risque, comme la nage en eau libre, nager seul, consommer de l'alcool, ne pas porter de gilet de sauvetage, …).
 
-**Données françaises (Santé Publique France 2015):**
+**Données françaises (Santé Publique France 2021):**
 
-Sur 1441 noyades estivales : 88% accidentelles, 11,5% intentionnelles. Localisation : 50% en mer (dont 47% dans la bande des 300m), 24% en piscine, 22% en eaux intérieures.
+Sur 1753 noyades estivales : 84% accidentelles, dont 42% en mer dans la bande des 300m, 18% en piscine privée, 19,7% en eaux intérieures (lacs, rivières, …).
 
-**Références:** Global status report on drowning prevention 2024. Geneva: World Health Organization; 2024. van Beeck et al. Bull WHO 2005; Dicker et al. Lancet 2018
+**Références** 
+[@ref titre="Global status report on drowning prevention 2024" auteurs="World Health Organization" date="2024"]
+[@ref auteurs="Dicker et al." revue="Lancet" date="2018"]
 
 :::questions
 
@@ -83,14 +88,39 @@ Entre 2000 et 2019, les inondations ont représenté 44% des catastrophes. Cela 
 
 En Australie, une augmentation de 18% des décès a été constaté pendant les vagues de chaleur. Cela est en lien avec une plus grande exposition, un consommation d'alcool, mais aussi à un changement des horaires de baignade (plus tôt ou plus tard), en dehors des périodes surveillées.
 
+En France, les pics de mortalités sont retrouvés lors des vagues de chaleur.
+
 **Références** 
 
-Peden AE, Mason HM, King JC, Franklin RC. *Examining the relationship between heatwaves and fatal drowning: a case study from Queensland, Australia.* Inj Prev. 2024;30(1):7–13. <a href="https://doi.org/10.1136/ip-2023-044938">doi.org/10.1136/ip-2023-044938</a>
+[@ref auteurs="Peden AE et al." titre="Examining the relationship between heatwaves and fatal drowning: a case study from Queensland, Australia." revue="Inj Prev." date="2024" doi="10.1136/ip-2023-044938"]
+[@ref auteurs="Sindal et al." titre="Drowning risk and climate change: a state-of-the-art review." revue="Inj Prev." date="2022" doi="10.1136/injuryprev-2021-044486"]
 
-Sindall R, Mecrow T, Queiroga AC, Boyer C, Koon W, Peden AE. *Drowning risk and climate change: a state-of-the-art review.* Inj Prev. 2022;28(2):185–91. <a href="https://doi.org/10.1136/injuryprev-2021-044486">doi.org/10.1136/injuryprev-2021-044486</a>.
 
-### Image: /images/boat_1.png
-Caption: Légende de l'image
+## Image: Baïnes
+> baines_1.jpg
+Caption: Photos d'une baïne sur la côte girondine. Crédit : Marie Dubourg
+
+## Image: Baïnes
+> baines_2.jpg
+Caption: Photos d'une baïne sur la côte girondine. Crédit : Philippe Lavigne
+
+:::details
+
+Les courants d'arrachement de baïnes sont responsables de plus de 70% des noyades sur le littoral océanique girondin.
+
+## Image: Migrations
+> boat_1.png 
+Caption: Photo prise par la Marine Militaire Italienne en 2016 d'un bateau de migrants renversé. 562 ont été sauvés, 5 sont mort noyés.
+
+:::details
+
+Entre 2014 et 2024, 57% des migrants morts le sont par noyade, soit 39&nbsp;383 personnes. Elles ne sont pas comptées dans le total précédent par l'OMS.
+Cela représente 4&nbsp;000 morts par an.
+
+**Référence**
+[@ref titre="Global status report on drowning prevention 2024" auteurs="World Health Organization" date="2024"]
+
+
 
 ## Physiopathologie
 
@@ -185,47 +215,12 @@ La température tympanique n'est PAS fiable en contexte de noyade (eau dans le c
 - À quelle température corporelle apparaît le risque de fibrillation ventriculaire ?
 - Comment suspecter cliniquement une hypothermie grave sans thermomètre adapté ?
 
-## Cold Shock Response et Conflit Autonome
 
-- Hydrocution : réponses neurovégétatives à l'immersion froide soudaine
-- Cold shock : hyperventilation, tachycardie, vasoconstriction
-- Réflexe d'immersion : bradycardie, vasoconstriction (face <21°C)
-- Conflit autonome = risque arythmique majeur
 
-:::details
+## Image: Algorithme de Szpilman
+> Szpilman_algo.drawio.svg
+caption: Algorithme szpilman
 
-**Cold shock response:**
-
-Réponses immédiates (premières minutes) : hyperventilation réflexe, tachycardie, vasoconstriction périphérique, élévation tensionnelle. C'est la cause la plus fréquente de décès lors d'immersions en eau froide. Le conditionnement physiologique (entraînement progressif) peut réduire cette réponse.
-
-**Réflexe d'immersion (diving reflex):**
-
-Déclenché lorsque la face est en contact avec de l'eau froide (<21°C). Il comprend : bradycardie rapide et intense, vasoconstriction périphérique, sur les immersions prolongées : vasoconstriction intense maintenant une pression thoracique.
-
-**Conflit autonome:**
-
-L'immersion en eau froide crée un conflit entre : voie parasympathique (réflexe d'immersion : bradycardie, apnée) et voie sympathique (cold shock : tachycardie, hyperventilation). Ce conflit génère un risque majeur d'arythmie, particulièrement chez les patients prédisposés (CMH, cardiopathie ischémique, QT long).
-
-**Point important:**
-
-La survenue de l'hydrocution n'est PAS favorisée par la digestion — cette croyance populaire n'a pas de fondement scientifique.
-
-**Références:** Tipton et al. Lancet 1999; Bierens et al. Physiology 2016
-
-:::questions
-
-- Quelles sont les composantes du cold shock response ?
-- Qu'est-ce que le réflexe d'immersion et comment est-il déclenché ?
-- Pourquoi le conflit autonome est-il particulièrement dangereux ?
-
-## Classification de Szpilman (6 Grades)
-
-- Grade 1 : auscultation normale + toux → mortalité 0%
-- Grade 2 : râles localisés → mortalité 1%
-- Grade 3 : OAP sans hypotension → mortalité 4-5%
-- Grade 4 : OAP + choc, 
-- Grade 5 : arrêt respiratoire
-- Grade 6 : ACR → 93%
 
 :::details
 
@@ -241,15 +236,20 @@ La classification historique (aquastress, petit/grand hypoxique, anoxique) est i
 4. Râles localisés → Grade 2
 5. OAP → Rechercher hypotension → Grade 3 (non) ou Grade 4 (oui)
 
+![Algorithme de classification selon Szpilman](/images/Szpilman_algo_black.drawio.svg)
+
+
 **Mortalité par grade:**
 
-Grade 1 : 0%, Grade 2 : 1%, Grade 3 : 4-5%, Grade 4 : 18-24%, Grade 5 : 31-44%, Grade 6 : 88-93%.
+Grade 1 : 0%, Grade 2 : 1%, Grade 3 : 4-5%, Grade 4 : 18-22%, Grade 5 : 31-44%, Grade 6 : 88-93%.
 
 **Astuce clinique sans stéthoscope:**
 
-La présence de sécrétions mousseuses dans la bouche ou le nez permet de distinguer le grade 1 (absence) des grades 2-3 (présence).
+La présence de sécrétions mousseuses dans la bouche ou le nez permet de distinguer les grade 1-2 (absence) des grades 3-4 (présence).
 
-**Références:** Szpilman. Chest 1997; Szpilman et al. NEJM 2012
+**Références:** 
+[@ref auteurs="Szpilman" revue="Chest" date="1997"]
+[@ref auteurs="D. Szpilman, J.J.L.M. Bierens, A.J. Handley, J.P. Orlowski" titre="Drowning" revue="NEJM" date="2012" doi="10.1056/NEJMra1013317"]
 
 :::questions
 
@@ -261,7 +261,7 @@ La présence de sécrétions mousseuses dans la bouche ou le nez permet de disti
 
 - Extraction horizontale (risque collapsus au « blood shift inverse »)
 - PRIORITÉ VENTILATION : 5 insufflations avant MCE
-- Recherche systématique de lésion rachidienne (plongeon, vague)
+- Recherche de lésion rachidienne (plongeon, vague). Si pas d'argument pour, pas de raison de traiter comme tel.
 - Réchauffement systématique
 
 :::details
@@ -280,7 +280,10 @@ Indispensable si : vague de bord, sport à risque (bodyboard, surf), notion de p
 
 **Prise en charge selon le grade:**
 
-Grade 1 : rassurer, pas d'O₂, sur place sauf ATCD. Grade 2 : O₂ aux lunettes, hôpital proximité 6-24h. Grades 3-4 : SMUR, MHC 15L/min, VNI ou IOT selon conscience, réanimation. Grades 5-6 : SMUR, IOT, RCP.
+Grade 1 : rassurer, pas d'O₂, sur place sauf ATCD. 
+Grade 2 : O₂ aux lunettes, hôpital proximité 6-24h. 
+Grades 3-4 : SMUR, MHC 15L/min, VNI ou IOT selon conscience, réanimation. 
+Grades 5-6 : SMUR, IOT, RCP.
 
 **Références:** Cao et al. Circulation 2025; Davis et al. Wilderness Environ Med 2024
 
@@ -352,7 +355,44 @@ Hétérogénéité des définitions, populations limitées aux patients ayant re
 - Quel est l'impact de la RCP par témoins sur la survie neurologique ?
 - Quel marqueur biologique est associé au pronostic chez les patients sans ACR ?
 
-## OAP d'Immersion (SIPE)
+# Cold Shock Response et Conflit Autonome
+
+## Cold shock response
+- Hydrocution : réponses neurovégétatives à l'immersion froide soudaine
+- Cold shock : hyperventilation, tachycardie, vasoconstriction
+- Réflexe d'immersion : bradycardie, vasoconstriction (face <21°C)
+- Conflit autonome = risque arythmique majeur
+
+:::details
+
+**Cold shock response:**
+
+Réponses immédiates (premières minutes) : hyperventilation réflexe, tachycardie, vasoconstriction périphérique, élévation tensionnelle. C'est la cause la plus fréquente de décès lors d'immersions en eau froide. Le conditionnement physiologique (entraînement progressif) peut réduire cette réponse.
+
+**Réflexe d'immersion (diving reflex):**
+
+Déclenché lorsque la face est en contact avec de l'eau froide (<21°C). Il comprend : bradycardie rapide et intense, vasoconstriction périphérique, sur les immersions prolongées : vasoconstriction intense maintenant une pression thoracique.
+
+**Conflit autonome:**
+
+L'immersion en eau froide crée un conflit entre : voie parasympathique (réflexe d'immersion : bradycardie, apnée) et voie sympathique (cold shock : tachycardie, hyperventilation). Ce conflit génère un risque majeur d'arythmie, particulièrement chez les patients prédisposés (CMH, cardiopathie ischémique, QT long).
+
+**Point important:**
+
+La survenue de l'hydrocution n'est PAS favorisée par la digestion — cette croyance populaire n'a pas de fondement scientifique.
+
+**Références:** Tipton et al. Lancet 1999; Bierens et al. Physiology 2016
+
+:::questions
+
+- Quelles sont les composantes du cold shock response ?
+- Qu'est-ce que le réflexe d'immersion et comment est-il déclenché ?
+- Pourquoi le conflit autonome est-il particulièrement dangereux ?
+
+
+# OAP d'Immersion (SIPE)
+
+## Nosologie
 
 - Swimming-Induced Pulmonary Edema : OAP en eau froide
 - Athlètes sains : nageurs, triathlètes, plongeurs apnée, SCUBA
@@ -389,43 +429,21 @@ Risque de récidive élevé (30-50%). Bilan cardiologique recommandé avant repr
 - Quels sont les critères diagnostiques cliniques du SIPE ?
 - Quel traitement préhospitalier est efficace dans le SIPE ?
 
-## OAP du Plongeur en Apnée (Freediving)
+# Traumatismes liés aux Vagues de Bord (Shore Break)
 
-- Mécanisme spécifique : « lung squeeze » + effort + hypoxie
-- Hook breathing : technique de récupération post-plongée
-- Récupération SaO₂ retardée = signe d'OAP débutant
-- Prévention du blackout hypoxique
+## Vagues de bord
+
+- TODO
 
 :::details
 
-**Mécanisme spécifique au freediving:**
+TODO
 
-En plongée profonde en apnée, plusieurs mécanismes se combinent : compression thoracique (« lung squeeze ») avec redistribution sanguine pulmonaire, effort intense en hypoxie, cold shock response si eau froide, réflexe d'immersion. L'augmentation des pressions vasculaires pulmonaires favorise l'extravasation liquidienne. Des signes d'OAP léger sont fréquents chez les freedivers profonds.
-
-**Technique du hook breathing:**
-
-Technique respiratoire utilisée par les freedivers pour faciliter la récupération après une plongée profonde. Principe : expiration interrompue avec maintien d'une pression intrapulmonaire positive (similaire à une manœuvre de Valsalva partielle). Effet démontré : accélère la récupération de la SaO₂ chez les plongeurs à récupération lente.
-
-**Récupération retardée de la SaO₂:**
-
-Certains freedivers présentent une récupération lente de leur saturation après plongée profonde. Ce phénomène est interprété comme un signe d'OAP léger transitoire. Le hook breathing permet de réduire le temps de récupération (60s vs 120s pour atteindre 95% de SaO₂).
-
-**Implications pour la sécurité:**
-
-La récupération retardée de la SaO₂ augmente le risque de syncope hypoxique (blackout) en surface. Le hook breathing est une technique de sécurité essentielle pour les freedivers. La surveillance par un binôme est obligatoire.
-
-**Références:** Fernández et al. Front Physiol 2019
-
-:::questions
-
-- Quel est le mécanisme spécifique de l'OAP chez le plongeur en apnée profonde ?
-- Qu'est-ce que le hook breathing et comment fonctionne-t-il ?
-- Pourquoi la récupération retardée de la SaO₂ est-elle dangereuse ?
-
-## Traumatismes des Vagues de Bord (Shore Break)
-
+## Traumatismes du rachis
 - Mécanisme : projection violente sur le sable par vague déferlante
 - Traumatisme rachidien cervical : hyperflexion/hyperextension
+- Luxation d'épaule
+- Entorses de genou
 - Population : baigneurs, bodyboarders, bodysurfers
 - Lésions médullaires potentiellement irréversibles
 
@@ -433,7 +451,7 @@ La récupération retardée de la SaO₂ augmente le risque de syncope hypoxique
 
 **Mécanisme lésionnel:**
 
-Le shore break (vague de bord) désigne une vague qui déferle directement sur le rivage, souvent avec une grande violence. Le baigneur est projeté tête la première sur le fond sableux, avec une force considérable. Le mécanisme est une hyperflexion ou hyperextension brutale du rachis cervical, parfois associée à une composante rotationnelle.
+Le shore break (vague de bord) désigne une vague qui déferle directement sur le rivage, souvent avec une grande violence. Le baigneur est projeté tête la première sur le fond sableux, avec une force considérable. Le mécanisme est une hyperflexion ou hyperextension brutale du rachis cervical, parfois associée à une composante rotationnelle. 
 
 **Épidémiologie:**
 
@@ -441,60 +459,39 @@ Les traumatismes du rachis cervical liés aux vagues de bord sont sous-estimés.
 
 **Lésions observées:**
 
-Fractures-luxations du rachis cervical (C4-C7 principalement), lésions médullaires avec risque de tétraplégie, traumatismes crâniens associés, noyade secondaire (incapacité de nager après traumatisme).
+Fractures-luxations du rachis cervical (C4-C7 principalement), lésions médullaires avec risque de tétraplégie, traumatismes crâniens associés, noyade  (incapacité de nager après traumatisme). Luxation gléno-humérales, entorses de genou.
+
+En Gironde, 814 traumatismes liés aux vagues de bord ont été référencés entre 2011 et 2017, 36% concernaient le rachis. Viennent ensuite l'épaule (28%) et le genou (14%).
 
 **Prise en charge:**
 
-Extraction en respectant l'axe tête-cou-tronc (planche de sauvetage), immobilisation cervicale immédiate, bilan neurologique rapide (motricité, sensibilité des 4 membres), intubation avec maintien de l'axe si nécessaire, imagerie : TDM rachis cervical systématique.
+Prise en charge spécifique au milieu aquatique : éviter la noyade. Extraction rapide en respectant au mieux l'axe tête-cou-tronc (planche de sauvetage), immobilisation cervicale immédiate, bilan neurologique rapide (motricité, sensibilité des 4 membres), intubation avec maintien de l'axe si nécessaire, imagerie : TDM rachis cervical systématique.
+Si patient conscient : auto-extraction, dans le respect de la douleur.
+
+Pas de collier cervical systématique (comme les autres traumatismes cervicaux).
+
+Pas d'immobilisation si patient asymptomatique !
 
 **Prévention:**
 
 Information des baigneurs sur les plages à shore break, panneaux de signalisation spécifiques, surveillance par MNS formés, éviter de plonger dans les vagues.
 
 **Références:** Données épidémiologiques des plages atlantiques françaises ; Recommandations SFMU traumatismes rachidiens
+[@ref auteurs="TELLIER et al." revue="Injury Epidemiology" date="2019" doi="10.1186/s40621-019-0195-x" titre="Characteristics of drowning victims in a surf environment: a 6-year retrospective study in southwestern France"]
+[@ref auteurs="Eric Tellier" titre="Noyades et traumatismes liés aux vagues et marées sur le littoral océanique girondin : épidémiologie, modélisation et prévention." revue="Thèse Médecine humaine et pathologie. Université de Bordeaux" date="2019"]
+[@ref auteurs="Breindahl et al." revue="Scand J Trauma Resusc Emerg Med" date="2024" doi="10.1186/s13049-024-01249-3" titre="Prehospital guidelines on in‑water traumatic spinal injuries for lifeguards and prehospital emergency medical services: an international Delphi consensus study"]
 
 :::questions
 
 - Qu'est-ce que le shore break et quel est son mécanisme lésionnel ?
-- Quelles sont les lésions rachidiennes typiques des traumatismes de vague de bord ?
+- Quelles sont les lésions typiques des traumatismes de vague de bord ?
 - Comment doit-on extraire une victime suspecte de lésion cervicale ?
 
-## Luxation d'Épaule en Milieu Aquatique
+## Autres traumatismes
 
-- Mécanisme : abduction + rotation externe forcée (vague, crawl)
-- Luxation antéro-interne : 95% des cas
-- Risque de récidive élevé chez le sujet jeune
-- Réduction sur place parfois nécessaire (éloignement)
-
-:::details
-
-**Mécanisme lésionnel:**
-
-La luxation d'épaule survient lors d'un mouvement forcé en abduction + rotation externe. En milieu aquatique, ce mécanisme est favorisé par : l'impact d'une vague sur le bras en position de crawl, une chute en bodyboard/surf avec bras en abduction, un choc direct contre le fond.
-
-**Présentation clinique:**
-
-Douleur intense avec impotence fonctionnelle totale, attitude des traumatisés du membre supérieur (bras en abduction, rotation externe, soutenu par l'autre main), « signe de l'épaulette » : saillie de l'acromion, vacuité de la glène. Complications à rechercher : lésion du nerf axillaire (hypoesthésie du moignon de l'épaule, déficit du deltoïde), lésion vasculaire (pouls radial), fracture associée (tête humérale, glène).
-
-**Prise en charge:**
-
-Immobilisation en position antalgique (écharpe), antalgie IV (morphine titration), radiographies avant réduction (éliminer fracture), réduction sous anesthésie (techniques de Kocher, Milch, ou Cunningham). Dans le contexte particulier de l'éloignement (plage isolée, île), une réduction précoce peut être tentée avant l'œdème (technique de Cunningham sans sédation).
-
-**Particularités du milieu aquatique:**
-
-Le refroidissement par l'eau peut avoir un effet antalgique initial masquant la gravité. L'hypothermie associée doit être recherchée et traitée. Le transport peut être complexe (accès plage, éloignement).
-
-**Pronostic:**
-
-Risque de récidive très élevé chez le sujet jeune sportif (>50% avant 20 ans). Lésions associées fréquentes : lésion de Bankart (labrum), lésion de Hill-Sachs (tête humérale). Rééducation et parfois chirurgie de stabilisation nécessaires.
-
-**Références:** Recommandations SOFCOT ; Cunningham NJ. Emerg Med Australas 2003
-
-:::questions
-
-- Quel est le mécanisme de la luxation antérieure d'épaule en milieu aquatique ?
-- Quelles complications neurologiques faut-il rechercher ?
-- Dans quelles circonstances une réduction précoce peut-elle être tentée ?
+- Luxations d'épaule
+- Entorses de genou
+- Traumtismes facial (surf, body board)
 
 ## Prévention des Accidents Aquatiques
 
