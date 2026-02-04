@@ -367,7 +367,7 @@ class HTMLGenerator:
         .slide { width: 100vw; height: 100vh; padding: 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; }
         .slide-main { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; }
         .slide-main .slide-blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: rgba(255, 255, 255, 0.15); border-left: 4px solid rgba(255, 255, 255, 0.6); border-radius: 0 8px 8px 0; font-style: italic; font-size: clamp(1rem, 1.8vw, 1.3rem);}
-        .slide-main .image-caption {position: absolute;bottom: 4rem;left: 50%;transform: translateX(-50%);font-size: 1rem;opacity: 0.9;text-align: center;}
+        .slide-main .image-caption {position: absolute;bottom: 1rem;left: 50%;transform: translateX(-50%);font-size: 1rem;opacity: 0.9;text-align: center;}
         .slide-main .slide-image {max-width: calc(100vw - 4rem);max-height: calc(100vh - 8rem);width: auto;height: auto;object-fit: contain;}
         .slide-detail { background: var(--bg-detail); overflow-y: auto; justify-content: flex-start; }
 

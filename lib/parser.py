@@ -48,8 +48,21 @@ def parse_presentation(md_content: str) -> Presentation:
                 has_annexes=False
             )
             current_section = 'main'
-            just_after_title = False
+            just_after_title = True
+        # Nouvelle slide d'image (## Image: )
+        elif line.startswith(MD_PREFIXES['image']):
+            if current_slide:
+                slides.append(current_slide)
+            current_slide = Slide(
+                slide_type=SLIDE_TYPES['image'],
+                number=len(slides) + 1,
+                title=line[len(MD_PREFIXES['image']):].strip(),
+                has_annexes=True
+            )
+            current_section = 'main'
+            just_after_title = True 
         
+
         # Nouvelle slide de contenu (## )
         elif line.startswith(MD_PREFIXES['h2']):
             if current_slide:
@@ -64,20 +77,7 @@ def parse_presentation(md_content: str) -> Presentation:
 
 
         
-        # Nouvelle slide d'image (### Image: )
-        elif line.startswith(MD_PREFIXES['image']):
-            if current_slide:
-                slides.append(current_slide)
-            current_slide = Slide(
-                slide_type=SLIDE_TYPES['image'],
-                number=len(slides) + 1,
-                image_url=line[len(MD_PREFIXES['image']):].strip(),
-                has_annexes=True
-            )
-            current_section = 'main'
-            just_after_title = False
-        
-        # Section détails
+                # Section détails
         elif line == MARKERS['details']:
             current_section = 'details'
         
@@ -92,8 +92,12 @@ def parse_presentation(md_content: str) -> Presentation:
         
         # Sous-titre (> ) seulement juste après le titre
         elif line.startswith('> ') and current_section == 'main' and just_after_title:
-            if current_slide:
+            if current_slide and current_slide.slide_type == SLIDE_TYPES['content']:
                 current_slide.subtitle = line[2:].strip()
+            elif current_slide and current_slide.slide_type == SLIDE_TYPES['title']:
+                current_slide.subtitle = line[2:].strip()
+            elif current_slide and current_slide.slide_type == SLIDE_TYPES['image']:
+                current_slide.image_url = line[2:].strip()
             just_after_title = False  # AJOUTER
 
         # Blockquote (> ) ailleurs dans main
@@ -109,7 +113,6 @@ def parse_presentation(md_content: str) -> Presentation:
         elif line.startswith(MD_PREFIXES['caption']) and current_slide and current_slide.slide_type == SLIDE_TYPES['image']:
             current_slide.image_caption = line[len(MD_PREFIXES['caption']):].strip()
             just_after_title = False
-        
         # Points de liste (- ou *)
         elif line.startswith(MD_PREFIXES['list_item'][0]) or line.startswith(MD_PREFIXES['list_item'][1]):
             just_after_title = False
@@ -152,15 +155,19 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
         
         # Nouveau titre de section
         if line.startswith('#'):
+
             if current_section and current_section.details:
                 sections.append(current_section)
             
             # Déterminer le niveau
-            level = 0
-            while level < len(line) and line[level] == '#':
-                level += 1
-            
-            title = line[level:].strip()
+            if line.startswith(MD_PREFIXES['image']):
+                level=2
+                title = line[len(MD_PREFIXES['image']):].strip()
+            else:
+                level = 0
+                while level < len(line) and line[level] == '#':
+                    level += 1
+                title = line[level:].strip()
             current_section = Section(title=title, level=level)
             in_details = False
         

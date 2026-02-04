@@ -21,7 +21,7 @@ MD_PREFIXES = {
     'h1': '# ',
     'h2': '## ',
     'h3': '### ',
-    'image': '### Image: ',
+    'image': '## Image: ',
     'subtitle': '> ',
     'caption': 'Caption: ',
     'list_item': ('- ', '* '),
