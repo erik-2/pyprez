@@ -10,6 +10,12 @@ from .models import Slide, Presentation
 from .config import CSS_FONTS, ASSETS, THEMES, DEFAULT_THEME
 
 
+def resolve_image_url(url: str) -> str:
+    """Résout l'URL d'une image (locale ou externe)"""
+    if url.startswith(("http://","https://","/")):
+        return url
+    return f'../images/{url}'
+
 def format_markdown(text: str) -> str:
     """Convertit le Markdown simple en HTML"""
     text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', text)  # Gras
@@ -43,7 +49,7 @@ def format_detail_line(line: str) -> str:
         url = img_match.group(2)
         caption = f'<figcaption>{alt}</figcaption>' if alt else ''
         return f'''<figure class="detail-image">
-                            <img src="{url}" alt="{alt}">
+                            <img src="{resolve_image_url(url)}" alt="{alt}">
                             {caption}
                         </figure>'''
     ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
@@ -290,7 +296,7 @@ class HTMLGenerator:
             <!-- SLIDE IMAGE {slide.number} -->
             <div class="slide slide-main"{data_attrs}>
                 <div class="position-indicator">{slide.number} / {total}</div>
-                    <img src="/images/{slide.image_url}" class="slide-image" alt="">
+                    <img src="{resolve_image_url(slide.image_url)}" class="slide-image" alt="">
                     {caption}
                 <div class="nav-hint">
                     {nav_hint} 

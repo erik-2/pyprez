@@ -391,14 +391,15 @@ def build(
 
     #Trouver les images
     img_dst = output_dir / 'images'
-    images_extensions = ["svg","png","jpg","jpeg","webm"]
+    img_dst.mkdir(parents=True, exist_ok=True)
+    images_extensions = ["svg","png","jpg","jpeg","webp"]
     total_images = 0
     for ext in images_extensions:
         img_files = list(source_dir.glob(f"*.{ext}"))
         for img in img_files:
             total_images += 1
-            shutil.copy(img, img_dst)
-    print(f" {total_images} images copiée(s)")
+            shutil.copy(img, img_dst / img.name)
+    print(f"🖼️ {total_images} images copiée(s)")
     
     # Copier les assets
     print("📦 Copie des assets...")
