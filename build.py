@@ -20,25 +20,6 @@ from lib import parse_presentation, HTMLGenerator, THEMES, DEFAULT_THEME
 from lib.config import CSS_FONTS
 
 
-def get_course_metadata(md_file: Path) -> Dict:
-    """Extrait les métadonnées d'un cours sans le compiler entièrement"""
-    content = md_file.read_text(encoding='utf-8')
-    presentation = parse_presentation(content)
-    
-    return {
-        'file': md_file,
-        'slug': md_file.stem,
-        'title': presentation.metadata.get('title', md_file.stem),
-        'subtitle': presentation.metadata.get('subtitle', ''),
-        'author': presentation.metadata.get('author', ''),
-        'date': presentation.metadata.get('date', ''),
-        'theme': presentation.metadata.get('theme', DEFAULT_THEME),
-        'university': presentation.metadata.get('university', ''),
-        'department': presentation.metadata.get('department', ''),
-        'total_slides': presentation.total_slides,
-    }
-
-
 def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../assets') -> Dict:
     """Compile un cours et retourne ses métadonnées"""
     print(f"  📄 {md_file.name}...")
@@ -55,8 +36,13 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
     # Générer la présentation
     generator = HTMLGenerator(base_path=md_file.parent, theme=theme)
     
-    # Modifier les chemins CSS/JS pour pointer vers assets partagés
-    html = generator.generate(presentation, js_uri=f'{assets_relative}/presentation.js')
+    css_file = Path('css/style.css')
+    if css_file.exists():
+        css = css_file.read_text(encoding='utf-8')
+    else:
+        raise FileNotFoundError(f"Fichier non trouvé {css_file}")
+
+    html = generator.generate(presentation, js_uri=f'{assets_relative}/presentation.js', css_style=css)
     
     # Remplacer le CSS inline par un lien externe
     # (optionnel, pour l'instant on garde le CSS inline pour la portabilité)

@@ -77,10 +77,10 @@ class HTMLGenerator:
         if self.theme not in THEMES:
             self.theme = DEFAULT_THEME
     
-    def generate(self, presentation: Presentation, js_uri: Optional[str] = None) -> str:
+    def generate(self, presentation: Presentation, js_uri: str, css_style: str) -> str:
         """Génère le HTML complet de la présentation"""
         slides_html = self._generate_slides(presentation)
-        css = self._load_css()
+        css = self._load_css(css_style)
         js_script = self._get_js_script(js_uri)
         
         return f'''<!DOCTYPE html>
@@ -337,16 +337,10 @@ class HTMLGenerator:
         
 
     
-    def _load_css(self) -> str:
+    def _load_css(self, css: str) -> str:
         """Charge le CSS avec le thème appliqué"""
         colors = THEMES.get(self.theme, THEMES[DEFAULT_THEME])
         
-        css_path = self.base_path / ASSETS['css']
-        if css_path.exists():
-            css = css_path.read_text(encoding='utf-8')
-        else:
-            css = self._default_css()
-
         css += CSS_FONTS
         
         # Appliquer les couleurs du thème
@@ -366,149 +360,6 @@ class HTMLGenerator:
         if js_path.exists():
             js_content = js_path.read_text(encoding='utf-8')
             return f'<script>\n{js_content}\n    </script>'
+        else:
+            raise FileNotFoundError(f"{ASSETS['js']}")
         
-        return f'<script>\n{self._default_js()}\n    </script>'
-    
-    def _default_css(self) -> str:
-        """CSS par défaut minimal"""
-        return '''
-        :root {
-            --primary: #0a4d68;
-            --secondary: #088395;
-            --accent: #05bfdb;
-            --warning: #ff6b35;
-            --bg-main: #f8f9fa;
-            --bg-detail: #e8f4f8;
-            --bg-question: #fff4e6;
-            --text: #1a1a1a;
-            --text-light: #4a5568;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Work Sans', sans-serif; background: var(--bg-main); overflow: hidden; color: var(--text); }
-        .presentation-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-        .slides-grid { display: grid; grid-template-columns: repeat(3, 100vw); grid-auto-rows: 100vh; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .slide { width: 100vw; height: 100vh; padding: 4rem; display: flex; flex-direction: column; justify-content: center; position: relative; }
-        .slide-main { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; }
-        .slide-main .slide-blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: rgba(255, 255, 255, 0.15); border-left: 4px solid rgba(255, 255, 255, 0.6); border-radius: 0 8px 8px 0; font-style: italic; font-size: clamp(1rem, 1.8vw, 1.3rem);}
-        .slide-main .image-caption {position: absolute;bottom: 1rem;left: 50%;transform: translateX(-50%);font-size: 1rem;opacity: 0.9;text-align: center;}
-        .slide-main .slide-image {max-width: calc(100vw - 4rem);max-height: calc(100vh - 8rem);width: auto;height: auto;object-fit: contain;}
-        .slide-detail { background: var(--bg-detail); overflow-y: auto; justify-content: flex-start; }
-        .slide-section { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); color: white; text-align: center; }
-        .slide-section h1 { font-size: clamp(3rem, 8vw, 6rem); margin-bottom: 1rem; }
-        .slide-section .subtitle { font-size: clamp(1.2rem, 3vw, 2rem); opacity: 0.85; }
-        .slide-section .content { display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .slide-question { background: var(--bg-question); overflow-y: auto; justify-content: flex-start; }
-        .slide-detail .content, .slide-question .content { padding-top: 4rem; padding-bottom: 6rem; }
-        h1 { font-family: 'Crimson Pro', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 700; margin-bottom: 2rem; line-height: 1.1; }
-        h2 { font-family: 'Crimson Pro', serif; font-size: clamp(1.8rem, 4vw, 3.5rem); font-weight: 600; margin-bottom: 1.5rem; color: var(--primary); }
-        .slide-question h2 { color: var(--warning); }
-        .content { max-width: 900px; margin: 0 auto; width: 100%; }
-        .subtitle { font-size: clamp(1.2rem, 2.5vw, 2rem); opacity: 0.9; margin-bottom: 3rem; font-weight: 300; }
-        .key-points { list-style: none; font-size: clamp(1rem, 2vw, 1.5rem); line-height: 1.8; }
-        .key-points li { margin-bottom: 1.5rem; padding-left: 2rem; position: relative; }
-        .key-points li::before { content: "→"; position: absolute; left: 0; color: rgba(255,255,255,0.7); }
-        .detail-text { font-size: clamp(1rem, 1.8vw, 1.3rem); line-height: 1.8; color: var(--text-light); }
-        .detail-text p { margin-bottom: 1.5rem; }
-        .detail-text strong { color: var(--primary); font-weight: 600; }
-        .detail-image { margin: 2rem 0; text-align: center; }
-        .detail-image img { max-width: 100%; max-height: 50vh; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .detail-image figcaption { margin-top: 0.75rem; font-size: 0.95rem; color: var(--text-light); font-style: italic; }
-        /* Blockquote dans les détails */
-        .detail-blockquote { margin: 1.5rem 0; padding: 1rem 1.5rem; background: rgba(10, 77, 104, 0.08); border-left: 4px solid var(--primary); border-radius: 0 8px 8px 0; font-style: italic; color: var(--text); }
-        .detail-blockquote strong { font-style: normal; }
-        .question-list { list-style: none; }
-        .question-item { background: white; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-left: 4px solid var(--warning); font-size: clamp(1rem, 1.8vw, 1.3rem); }
-        .question-number { display: inline-block; background: var(--warning); color: white; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-weight: bold; margin-right: 1rem; }
-        .position-indicator { position: absolute; top: 2rem; right: 2rem; font-size: 0.9rem; opacity: 0.7; }
-        .slide-main .position-indicator { color: white; }
-        .slide-detail .position-indicator, .slide-question .position-indicator { position: fixed; }
-        .nav-hint { position: absolute; bottom: 2rem; right: 2rem; font-size: 0.9rem; opacity: 0.6; display: flex; gap: 1.5rem; }
-        .slide-main .nav-hint { color: white; }
-        .slide-detail .nav-hint, .slide-question .nav-hint { position: fixed; }
-        .key-icon { padding: 0.3rem 0.6rem; background: rgba(255,255,255,0.2); border-radius: 4px; font-family: monospace; }
-        .slide-detail .key-icon, .slide-question .key-icon { background: rgba(0,0,0,0.1); }
-        '''
-    
-    def _default_js(self) -> str:
-        """JS par défaut minimal"""
-        return '''
-const PresentationNav = (function() {
-    let currentSlide = 0, currentView = 0, totalSlides = 0, slideGroups = [];
-    
-    function buildSlideGroups() {
-        slideGroups = [];
-        const allSlides = Array.from(document.querySelectorAll('.slide'));
-        let i = 0;
-        while (i < allSlides.length) {
-            const main = allSlides[i];
-            if (!main.classList.contains('slide-main')) { i++; continue; }
-            let maxView = 2;
-            if (main.dataset.noAnnexes === 'true') maxView = 0;
-            else if (main.dataset.maxView === '1') maxView = 1;
-            const group = { main, detail: null, question: null, maxView };
-            if (maxView === 0) {
-                for (let j = 0; j < 2; j++) {
-                    const ph = document.createElement('div');
-                    ph.className = 'slide';
-                    ph.style.visibility = 'hidden';
-                    main.after(ph);
-                }
-                i += 1;
-            } else {
-                group.detail = allSlides[i + 1];
-                if (maxView === 2) group.question = allSlides[i + 2];
-                i += 3;
-            }
-            slideGroups.push(group);
-        }
-    }
-    
-    function getMaxView(idx) { return slideGroups[idx]?.maxView ?? 0; }
-    function getActive() {
-        const g = slideGroups[currentSlide];
-        if (!g) return null;
-        if (currentView === 0) return g.main;
-        if (currentView === 1) return g.detail;
-        return g.question;
-    }
-    
-    function updatePosition() {
-        const grid = document.getElementById('slidesGrid');
-        if (currentView > getMaxView(currentSlide)) currentView = getMaxView(currentSlide);
-        grid.style.transform = `translate(${-currentView * 100}vw, ${-currentSlide * 100}vh)`;
-        document.querySelectorAll('.slide-detail, .slide-question').forEach(s => {
-            const p = s.querySelector('.position-indicator'), n = s.querySelector('.nav-hint');
-            if (p) p.style.opacity = '0';
-            if (n) n.style.opacity = '0';
-        });
-        if (currentView > 0) {
-            const a = getActive();
-            if (a) {
-                const p = a.querySelector('.position-indicator'), n = a.querySelector('.nav-hint');
-                if (p) p.style.opacity = '0.7';
-                if (n) n.style.opacity = '0.6';
-            }
-        }
-        setTimeout(() => { const el = getActive(); if (el) el.scrollTop = 0; }, 100);
-    }
-    
-    function handleKey(e) {
-        const maxView = getMaxView(currentSlide);
-        switch(e.key) {
-            case 'ArrowDown': e.preventDefault(); if (currentSlide < totalSlides - 1) { currentSlide++; currentView = 0; updatePosition(); } break;
-            case 'ArrowUp': e.preventDefault(); if (currentSlide > 0) { currentSlide--; currentView = 0; updatePosition(); } break;
-            case 'ArrowRight': e.preventDefault(); if (currentView < maxView) { currentView++; updatePosition(); } break;
-            case 'ArrowLeft': e.preventDefault(); if (currentView > 0) { currentView--; updatePosition(); } break;
-        }
-    }
-    
-    function init(total) {
-        totalSlides = total;
-        buildSlideGroups();
-        document.addEventListener('keydown', handleKey);
-        updatePosition();
-    }
-    
-    return { init, goTo: (s, v=0) => { currentSlide = s; currentView = v; updatePosition(); } };
-})();
-'''
