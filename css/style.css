@@ -303,6 +303,33 @@ h2 {
   background: rgba(0, 0, 0, 0.1);
 }
 
+/* Références bibliographiques */
+.reference {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  padding: 0.5rem 0;
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+.ref-auteurs {
+  font-weight: 500;
+}
+
+.ref-titre {
+  font-style: italic;
+}
+
+.ref-doi {
+  color: var(--secondary);
+  text-decoration: none;
+}
+
+.ref-doi:hover {
+  text-decoration: underline;
+}
+
 /* Animations */
 @keyframes slideIn {
   from {

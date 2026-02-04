@@ -87,6 +87,24 @@ def generate_details_document(metadata: dict, sections: list) -> str:
 </html>'''
 
 
+def format_reference_html(attrs: dict) -> str:
+    """Formate une référence bibliographique"""
+    parts = []
+    if attrs.get('auteurs'):
+        parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
+    if attrs.get('titre'):
+        parts.append(f'<em class="ref-titre">{attrs["titre"]}</em>')
+    if attrs.get('revue'):
+        parts.append(f'<span class="ref-revue">{attrs["revue"]}</span>')
+    if attrs.get('date'):
+        parts.append(f'<span class="ref-date">{attrs["date"]}</span>')
+    if attrs.get('doi'):
+        doi = attrs["doi"]
+        parts.append(f'<a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>')
+    
+    return f'<p class="reference">{". ".join(parts)}.</p>'
+
+
 def _generate_section(section, idx: int) -> str:
     """Génère le HTML d'une section"""
     level_class = f"level-{section.level}"
@@ -126,7 +144,13 @@ def _generate_section(section, idx: int) -> str:
                 current_list = False
             content = format_markdown(detail['content'])
             content_parts.append(f'<blockquote class="detail-blockquote">{content}</blockquote>')
-        
+
+        elif detail['type'] == 'reference':
+            if current_list:
+                content_parts.append('</ul>')
+                current_list = False
+            content_parts.append(format_reference_html(detail))
+
         else:  # paragraph
             if current_list:
                 content_parts.append('</ul>')
@@ -168,6 +192,7 @@ def _get_details_css() -> str:
             .no-print { display: none; }
             a { color: #000; text-decoration: none; }
             .section { page-break-inside: avoid; }
+            .ref-doi {display: none;}
         }
         body {
             font-family: 'Georgia', serif;

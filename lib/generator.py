@@ -17,6 +17,22 @@ def format_markdown(text: str) -> str:
     text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)  # Code
     return text
 
+def format_reference(attrs: dict) -> str:
+    """Formate une référence bibliographique"""
+    parts = []
+    if attrs.get('auteurs'):
+        parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
+    if attrs.get('titre'):
+        parts.append(f'<em class="ref-titre">{attrs["titre"]}</em>')
+    if attrs.get('revue'):
+        parts.append(f'<span class="ref-revue">{attrs["revue"]}</span>')
+    if attrs.get('date'):
+        parts.append(f'<span class="ref-date">{attrs["date"]}</span>')
+    if attrs.get('doi'):
+        doi = attrs["doi"]
+        parts.append(f'<a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>')
+    
+    return f'<p class="reference">{". ".join(parts)}.</p>'
 
 def format_detail_line(line: str) -> str:
     """Formate une ligne de détail (texte, image, etc.) en HTML"""
@@ -30,6 +46,12 @@ def format_detail_line(line: str) -> str:
                             <img src="{url}" alt="{alt}">
                             {caption}
                         </figure>'''
+    ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
+    if ref_match:
+        attrs = {}
+        for m in re.finditer(r'(\w+)="([^"]*)"', ref_match.group(1)):
+            attrs[m.group(1)] = m.group(2)
+        return format_reference(attrs)
 
     # Blockquote
     if line.strip().startswith('> '):
