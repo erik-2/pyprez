@@ -264,20 +264,55 @@ class HTMLGenerator:
     
     def _slide_image(self, slide: Slide, total: int) -> str:
         """Génère une slide d'image"""
+        max_view = slide.max_view
+        
+        # Attributs de la slide principale
+        if max_view == 0:
+            data_attrs = ' data-no-annexes="true"'
+        elif max_view == 1:
+            data_attrs = ' data-max-view="1"'
+        else:
+            data_attrs = ''
+
         caption = (
             f'<p class="image-caption" >{slide.image_caption}</p>'
             if slide.image_caption else ''
         )
-        return f'''
+        if max_view > 0:
+            nav_hint = '''
+                    <span><span class="key-icon">↑↓</span> Navigation</span>
+                    <span><span class="key-icon">→</span> Détails</span>'''
+        else:
+            nav_hint = '''
+                    <span><span class="key-icon">↑↓</span> Navigation</span>'''
+
+        html = f'''
             <!-- SLIDE IMAGE {slide.number} -->
-            <div class="slide slide-main" data-no-annexes="true">
+            <div class="slide slide-main"{data_attrs}>
                 <div class="position-indicator">{slide.number} / {total}</div>
                     <img src="/images/{slide.image_url}" class="slide-image" alt="">
                     {caption}
                 <div class="nav-hint">
-                    <span><span class="key-icon">↑↓</span> Navigation</span>
+                    {nav_hint} 
                 </div>
             </div>'''
+
+        # Slide détails
+        if max_view >= 1:
+            html += self._slide_details(slide, total, has_questions=(max_view == 2))
+        
+        # Slide questions
+        if max_view == 2:
+            html += self._slide_questions(slide, total)
+        elif max_view == 1:
+            # Placeholder pour maintenir la grille
+            html += '''
+
+            <div class="slide" style="visibility: hidden;"></div>'''
+
+        return html
+        
+
     
     def _load_css(self) -> str:
         """Charge le CSS avec le thème appliqué"""

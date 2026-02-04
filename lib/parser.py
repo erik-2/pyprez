@@ -72,7 +72,7 @@ def parse_presentation(md_content: str) -> Presentation:
                 slide_type=SLIDE_TYPES['image'],
                 number=len(slides) + 1,
                 image_url=line[len(MD_PREFIXES['image']):].strip(),
-                has_annexes=False
+                has_annexes=True
             )
             current_section = 'main'
             just_after_title = False
