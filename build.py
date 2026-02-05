@@ -315,30 +315,6 @@ def generate_index(courses: List[Dict], output_dir: Path, site_title: str = "Cat
     (output_dir / 'index.html').write_text(html, encoding='utf-8')
 
 
-def copy_assets(output_dir: Path, source_dir: Path):
-    """Copie les assets partagés (CSS, JS)"""
-    assets_dir = output_dir / 'assets'
-    assets_dir.mkdir(parents=True, exist_ok=True)
-    
-    # CSS
-    css_src = source_dir / 'css' / 'style.css'
-    if css_src.exists():
-        shutil.copy(css_src, assets_dir / 'style.css')
-    
-    # JS
-    js_src = source_dir / 'js' / 'presentation.js'
-    if js_src.exists():
-        shutil.copy(js_src, assets_dir / 'presentation.js')
-
-    fonts_src = source_dir / 'fonts'
-    if fonts_src.exists():
-        fonts_dst = output_dir / 'fonts'
-        if fonts_dst.exists():
-            shutil.rmtree(fonts_dst)
-        shutil.copytree(fonts_src, fonts_dst)
-
-
-
 def build(
     source_dir: Path,
     output_dir: Path,
@@ -379,12 +355,7 @@ def build(
             total_images += 1
             shutil.copy(img, img_dst / img.name)
     print(f"🖼️ {total_images} images copiée(s)")
-    
-    # Copier les assets
-    print("📦 Copie des assets...")
-    script_dir = Path(__file__).parent
-    copy_assets(output_dir, script_dir)
-    
+
     # Compiler chaque cours
     print("🏗️  Compilation des cours...")
     courses = []
