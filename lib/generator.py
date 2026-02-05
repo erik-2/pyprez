@@ -112,17 +112,17 @@ class HTMLGenerator:
         """Génère le HTML de toutes les slides"""
         html_parts = []
         total = presentation.total_slides
-    
+
         for slide in presentation.slides:
             if slide.slide_type == 'title':
-                html_parts.append(self._slide_title(slide))
+                html_parts.append(self._slide_title(slide, presentation.metadata))
             elif slide.slide_type == 'section':
                 html_parts.append(self._slide_section(slide))
             elif slide.slide_type == 'content':
                 html_parts.append(self._slide_content(slide, total))
             elif slide.slide_type == 'image':
                 html_parts.append(self._slide_image(slide, total))
-    
+
         return '\n'.join(html_parts)
 
     def _slide_section(self, slide: Slide) -> str:
@@ -140,9 +140,21 @@ class HTMLGenerator:
                     </div>
                 </div>'''
         
-    def _slide_title(self, slide: Slide) -> str:
+    def _slide_title(self, slide: Slide, metadata: dict) -> str:
         """Génère une slide de titre"""
         subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
+
+        # Construire les métadonnées
+        meta_parts = []
+        if metadata.get('author'):
+            meta_parts.append(f'<span class="meta-item">{metadata["author"]}</span>')
+        if metadata.get('university'):
+            meta_parts.append(f'<span class="meta-item">{metadata["university"]}</span>')
+        if metadata.get('date'):
+            meta_parts.append(f'<span class="meta-item">{metadata["date"]}</span>')
+
+        meta_html = f'<div class="title-meta">{" · ".join(meta_parts)}</div>' if meta_parts else ''
+
         return f'''
             <!-- SLIDE TITRE -->
             <div class="slide slide-main" data-no-annexes="true">
@@ -150,6 +162,7 @@ class HTMLGenerator:
                 <div class="content">
                     <h1>{slide.title}</h1>
                     {subtitle}
+                    {meta_html}
                 </div>
                 <div class="nav-hint">
                     <span><span class="key-icon">↓</span> Commencer le cours</span>
