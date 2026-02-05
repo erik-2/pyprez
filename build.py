@@ -43,10 +43,7 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
         raise FileNotFoundError(f"Fichier non trouvé {css_file}")
 
     html = generator.generate(presentation, js_uri=f'{assets_relative}/presentation.js', css_style=css)
-    
-    # Remplacer le CSS inline par un lien externe
-    # (optionnel, pour l'instant on garde le CSS inline pour la portabilité)
-    
+
     (course_dir / 'index.html').write_text(html, encoding='utf-8')
     
     # Générer les détails (document imprimable)
