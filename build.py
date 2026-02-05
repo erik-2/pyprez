@@ -40,7 +40,7 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
     else:
         raise FileNotFoundError(f"Fichier non trouvé {css_file}")
 
-    html = generator.generate(presentation, js_uri=f'{assets_relative}/presentation.js', css_style=css)
+    html = generator.generate(presentation, js_uri=None, css_style=css)
 
     (course_dir / 'index.html').write_text(html, encoding='utf-8')
     

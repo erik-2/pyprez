@@ -350,14 +350,38 @@ class HTMLGenerator:
         return css
     
     def _get_js_script(self, uri: Optional[str] = None) -> str:
-        """Retourne le script JS (lien ou inline)"""
+        """Retourne le script JS (lien ou inline minifié)"""
         if uri:
             return f'<script src="{uri}"></script>'
-        
-        js_path = self.base_path / ASSETS['js']
+
+        # Chercher le JS depuis la racine du projet
+        project_root = Path(__file__).parent.parent
+        js_path = project_root / ASSETS['js']
+
         if js_path.exists():
             js_content = js_path.read_text(encoding='utf-8')
-            return f'<script>\n{js_content}\n    </script>'
+            minified = self._minify_js(js_content)
+            return f'<script>{minified}</script>'
         else:
-            raise FileNotFoundError(f"{ASSETS['js']}")
+            raise FileNotFoundError(f"Fichier JS introuvable: {js_path}")
+
+    def _minify_js(self, js_code: str) -> str:
+        """Minifie le code JavaScript"""
+        import re
+
+        # Supprimer les commentaires multilignes
+        js_code = re.sub(r'/\*[\s\S]*?\*/', '', js_code)
+        # Supprimer les commentaires de ligne
+        js_code = re.sub(r'//.*?$', '', js_code, flags=re.MULTILINE)
+        # Supprimer les lignes vides
+        js_code = re.sub(r'\n\s*\n', '\n', js_code)
+        # Supprimer les espaces en début/fin de ligne
+        js_code = re.sub(r'^\s+', '', js_code, flags=re.MULTILINE)
+        js_code = re.sub(r'\s+$', '', js_code, flags=re.MULTILINE)
+        # Remplacer les multiples espaces par un seul
+        js_code = re.sub(r'\s+', ' ', js_code)
+        # Supprimer les espaces autour des opérateurs et symboles
+        js_code = re.sub(r'\s*([{}()\[\];,:.=<>!+\-*/&|?])\s*', r'\1', js_code)
+
+        return js_code.strip()
         
