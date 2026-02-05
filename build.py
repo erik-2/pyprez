@@ -372,7 +372,7 @@ def build(
     images_extensions = ["svg","png","jpg","jpeg","webp"]
     total_images = 0
     for ext in images_extensions:
-        img_files = list(source_dir.glob(f"*.{ext}"))
+        img_files = list(source_dir.glob(f"**/*.{ext}"))
         for img in img_files:
             total_images += 1
             shutil.copy(img, img_dst / img.name)
