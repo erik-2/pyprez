@@ -327,7 +327,6 @@ def _get_details_css() -> str:
   color: var(--secondary);
   font-weight: 400;
 }
-        .section-title.level-1 { font-size: 2rem; color: var(--secondary); text-transform: uppercase; letter-spacing: 1px; }
         .section-content { padding-left: 1rem; }
         .detail-subtitle { font-size: 1.2rem; color: var(--secondary); font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.8rem; }
         .detail-paragraph { font-size: 1rem; margin-bottom: 1rem; text-align: justify; }

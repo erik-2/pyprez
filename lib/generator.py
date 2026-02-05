@@ -77,7 +77,7 @@ class HTMLGenerator:
         if self.theme not in THEMES:
             self.theme = DEFAULT_THEME
     
-    def generate(self, presentation: Presentation, js_uri: str, css_style: str) -> str:
+    def generate(self, presentation: Presentation, js_uri: str | None, css_style: str) -> str:
         """Génère le HTML complet de la présentation"""
         slides_html = self._generate_slides(presentation)
         css = self._load_css(css_style)
@@ -208,9 +208,7 @@ class HTMLGenerator:
                 <div class="content">
                     <h1>{slide.title}</h1>
                     {subtitle}
-                    <ul class="key-points">
-{points}
-                    </ul>
+                    {points}
                 </div>
                 <div class="nav-hint">{nav_hint}
                 </div>

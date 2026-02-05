@@ -72,17 +72,6 @@ CSS_FONTS = '''
   /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
-/* crimson-pro-500 - latin */
-@font-face {
-  font-display: swap;
-  /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: 'Crimson Pro';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/fonts/crimson-pro-v28-latin-500.woff2') format('woff2');
-  /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
 /* crimson-pro-700 - latin */
 @font-face {
   font-display: swap;

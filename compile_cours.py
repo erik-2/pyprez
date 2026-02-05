@@ -47,10 +47,15 @@ def compile_course(
     # Thème : argument CLI > métadonnées > défaut
     final_theme = theme or presentation.metadata.get('theme') or DEFAULT_THEME
     print(f"🎨 Thème : {final_theme}")
-    
-    print("🏗️  Génération du HTML...")
+    css_file = Path('css/style.css')
+    if css_file.exists():
+        css = css_file.read_text(encoding='utf-8')
+    else:
+        raise FileNotFoundError(f"Fichier non trouvé {css_file}")
+
     generator = HTMLGenerator(base_path=md_file.parent, theme=final_theme)
-    html = generator.generate(presentation, js_uri=js_uri)
+    html = generator.generate(presentation, js_uri=js_uri, css_style=css)
+
     
     if output_file is None:
         output_file = md_file.with_suffix('.html')

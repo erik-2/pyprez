@@ -28,12 +28,10 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
     presentation = parse_presentation(content)
     
     theme = presentation.metadata.get('theme', DEFAULT_THEME)
-    
-    # Créer le dossier du cours
+
     course_dir = output_dir / md_file.stem
     course_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Générer la présentation
+
     generator = HTMLGenerator(base_path=md_file.parent, theme=theme)
     
     css_file = Path('css/style.css')
@@ -49,12 +47,8 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
     # Générer les détails (document imprimable)
     from extract_details import extract_details
     details_output = course_dir / 'details.html'
-    
-    # Temporairement rediriger pour éviter les prints
-    import io
-    from contextlib import redirect_stdout
-    with redirect_stdout(io.StringIO()):
-        extract_details(md_file, details_output)
+
+    extract_details(md_file, details_output)
     
     return {
         'slug': md_file.stem,
@@ -372,7 +366,7 @@ def build(
     
     print(f"📚 {len(md_files)} cours trouvés")
 
-    #Trouver les images
+    # Trouver les images
     img_dst = output_dir / 'images'
     img_dst.mkdir(parents=True, exist_ok=True)
     images_extensions = ["svg","png","jpg","jpeg","webp"]
