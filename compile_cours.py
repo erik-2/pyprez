@@ -47,11 +47,14 @@ def compile_course(
     # Thème : argument CLI > métadonnées > défaut
     final_theme = theme or presentation.metadata.get('theme') or DEFAULT_THEME
     print(f"🎨 Thème : {final_theme}")
-    css_file = Path('css/style.css')
+
+    # Charger le CSS depuis le dossier du projet
+    project_root = Path(__file__).parent
+    css_file = project_root / 'css' / 'style.css'
     if css_file.exists():
         css = css_file.read_text(encoding='utf-8')
     else:
-        raise FileNotFoundError(f"Fichier non trouvé {css_file}")
+        raise FileNotFoundError(f"Fichier CSS introuvable: {css_file}")
 
     generator = HTMLGenerator(base_path=md_file.parent, theme=final_theme)
     html = generator.generate(presentation, js_uri=js_uri, css_style=css)

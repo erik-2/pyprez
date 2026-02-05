@@ -33,12 +33,14 @@ def compile_course(md_file: Path, output_dir: Path, assets_relative: str = '../a
     course_dir.mkdir(parents=True, exist_ok=True)
 
     generator = HTMLGenerator(base_path=md_file.parent, theme=theme)
-    
-    css_file = Path('css/style.css')
+
+    # Charger le CSS depuis le dossier du projet
+    project_root = Path(__file__).parent
+    css_file = project_root / 'css' / 'style.css'
     if css_file.exists():
         css = css_file.read_text(encoding='utf-8')
     else:
-        raise FileNotFoundError(f"Fichier non trouvé {css_file}")
+        raise FileNotFoundError(f"Fichier CSS introuvable: {css_file}")
 
     html = generator.generate(presentation, js_uri=None, css_style=css)
 
