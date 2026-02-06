@@ -43,6 +43,8 @@ def format_detail_line(line: str) -> str:
     if img_match:
         alt = img_match.group(1)
         url = img_match.group(2)
+        if not url.startswith(('http://', 'https://', '/')):
+            url = f'../../images/{url}'
         caption = f'<figcaption>{alt}</figcaption>' if alt else ''
         return f'''<figure class="detail-image">
                             <img src="{url}" alt="{alt}">
@@ -134,16 +136,30 @@ a {{
         css = css.replace('#ff6b35', colors['warning'])
         
         return CSS_FONTS + css
+    
+    def _load_js(self) -> str:
+        """Charge le JavaScript depuis le fichier"""
+        js_path = self.base_path / ASSETS['js']
+        if js_path.exists():
+            return js_path.read_text(encoding='utf-8')
+        
+        # Fallback : chercher dans le répertoire du script
+        script_dir = Path(__file__).parent.parent
+        js_path = script_dir / ASSETS['js']
+        if js_path.exists():
+            return js_path.read_text(encoding='utf-8')
+        
+        return 'console.error("JS not found");'
 
 
 class HTMLGenerator(BaseGenerator):
     """Génère le HTML d'une présentation"""
     
-    def generate(self, presentation: Presentation, js_uri: Optional[str] = None) -> str:
-        """Génère le HTML complet de la présentation"""
+    def generate(self, presentation: Presentation) -> str:
+        """Génère le HTML complet de la présentation avec CSS et JS inlinés"""
         slides_html = self._generate_slides(presentation)
         css = self._load_css()
-        js_script = self._get_js_script(js_uri)
+        js = self._load_js()
         
         return f'''<!DOCTYPE html>
 <html lang="fr">
@@ -163,7 +179,9 @@ class HTMLGenerator(BaseGenerator):
         </div>
     </div>
 
-    {js_script}
+    <script>
+{js}
+    </script>
     <script>
         PresentationNav.init({presentation.total_slides});
     </script>
@@ -175,15 +193,17 @@ class HTMLGenerator(BaseGenerator):
         html_parts = []
         total = presentation.total_slides
         
-        for slide in presentation.slides:
+        
+        for i, slide in enumerate(presentation.slides):
+            is_last = (i == len (presentation.slides) -1)
             if slide.slide_type == 'title':
                 html_parts.append(self._slide_title(slide))
             elif slide.slide_type == 'section':
-                html_parts.append(self._slide_section(slide))
+                html_parts.append(self._slide_section(slide, is_last))
             elif slide.slide_type == 'content':
-                html_parts.append(self._slide_content(slide, total))
+                html_parts.append(self._slide_content(slide, total, is_last))
             elif slide.slide_type == 'image':
-                html_parts.append(self._slide_image(slide, total))
+                html_parts.append(self._slide_image(slide, total, is_last))
         
         return '\n'.join(html_parts)
     
@@ -203,9 +223,16 @@ class HTMLGenerator(BaseGenerator):
                 </div>
             </div>'''
     
-    def _slide_section(self, slide: Slide) -> str:
+    def _slide_section(self, slide: Slide, is_last: bool = False) -> str:
         """Génère une slide de section"""
         subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
+        if is_last:
+            nav_hint = '''
+                <span><span class="key-icon">Q</span> Quitter</span>'''
+        else:
+            nav_hint = '''
+                <span><span class="key-icon">↓</span> Continuer</span>'''
+        
         return f'''
             <!-- SLIDE SECTION -->
             <div class="slide slide-section" data-no-annexes="true">
@@ -214,11 +241,11 @@ class HTMLGenerator(BaseGenerator):
                     {subtitle}
                 </div>
                 <div class="nav-hint">
-                    <span><span class="key-icon">↓</span> Continuer</span>
+                        {nav_hint}
                 </div>
             </div>'''
     
-    def _slide_content(self, slide: Slide, total: int) -> str:
+    def _slide_content(self, slide: Slide, total: int, is_last: bool = False) -> str:
         """Génère une slide de contenu avec ses annexes"""
         max_view = slide.max_view
         
@@ -248,14 +275,23 @@ class HTMLGenerator(BaseGenerator):
             points = f'<ul class="key-points">\n' + '\n'.join(points_html) + '\n                    </ul>'
         else:
             points = '\n'.join(points_html)
-        
-        if max_view > 0:
-            nav_hint = '''
-                    <span><span class="key-icon">↑↓</span> Navigation</span>
+
+        if is_last:
+            if max_view > 0:
+                nav_hint = '''
+                    <span><span class="key-icon">Q</span> Quitter</span>
                     <span><span class="key-icon">→</span> Détails</span>'''
+            else:
+                nav_hint = '''
+                    <span><span class="key-icon">Q</span> Quitter</span>'''
         else:
-            nav_hint = '''
-                    <span><span class="key-icon">↑↓</span> Navigation</span>'''
+            if max_view > 0:
+                nav_hint = '''
+                        <span><span class="key-icon">↑↓</span> Navigation</span>
+                        <span><span class="key-icon">→</span> Détails</span>'''
+            else:
+                nav_hint = '''
+                        <span><span class="key-icon">↑↓</span> Navigation</span>'''
         
         html = f'''
             <!-- SLIDE {slide.number} : {slide.title} -->
@@ -336,7 +372,7 @@ class HTMLGenerator(BaseGenerator):
                 </div>
             </div>'''
     
-    def _slide_image(self, slide: Slide, total: int) -> str:
+    def _slide_image(self, slide: Slide, total: int, is_last: bool = False) -> str:
         """Génère une slide d'image"""
         max_view = slide.max_view
         
@@ -347,21 +383,35 @@ class HTMLGenerator(BaseGenerator):
         else:
             data_attrs = ''
 
+        # Résoudre l'URL de l'image
+        image_url = slide.image_url
+        if image_url and not image_url.startswith(('http://', 'https://', '/')):
+            image_url = f'../../images/{image_url}'
+
         caption = f'<p class="image-caption">{slide.image_caption}</p>' if slide.image_caption else ''
-        
-        if max_view > 0:
-            nav_hint = '''
+       
+        if is_last:
+            if max_view > 0:
+                nav_hint = '''
+                    <span><span class="key-icon">Q</span> Quitter</span>
+                    <span><span class="key-icon">→</span> Détails</span>'''
+            else:
+                nav_hint = '''
+                    <span><span class="key-icon">Q</span> Quitter</span>'''
+        else:
+            if max_view > 0:
+                nav_hint = '''
                     <span><span class="key-icon">↑↓</span> Navigation</span>
                     <span><span class="key-icon">→</span> Détails</span>'''
-        else:
-            nav_hint = '''
+            else:
+                nav_hint = '''
                     <span><span class="key-icon">↑↓</span> Navigation</span>'''
 
         html = f'''
             <!-- SLIDE IMAGE {slide.number} -->
             <div class="slide slide-main"{data_attrs}>
                 <div class="position-indicator">{slide.number} / {total}</div>
-                <img src="/images/{slide.image_url}" class="slide-image" alt="">
+                <img src="{image_url}" class="slide-image" alt="">
                 {caption}
                 <div class="nav-hint">{nav_hint}
                 </div>
@@ -378,18 +428,6 @@ class HTMLGenerator(BaseGenerator):
             <div class="slide" style="visibility: hidden;"></div>'''
 
         return html
-    
-    def _get_js_script(self, uri: Optional[str] = None) -> str:
-        """Retourne le script JS"""
-        if uri:
-            return f'<script src="{uri}"></script>'
-        
-        js_path = self.base_path / ASSETS['js']
-        if js_path.exists():
-            js_content = js_path.read_text(encoding='utf-8')
-            return f'<script>\n{js_content}\n    </script>'
-        
-        return '<script>console.error("JS not found");</script>'
 
 
 class PageGenerator(BaseGenerator):

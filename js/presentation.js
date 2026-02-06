@@ -176,9 +176,16 @@ const PresentationNav = (function() {
                     updatePosition();
                 }
                 break;
+
+            case 'q':
+            case 'Q':
+            case 'Escape':
+                history.back();
+                break;
         }
     }
 
+    
     function handleTouchStart(e) {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;

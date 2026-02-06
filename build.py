@@ -7,16 +7,6 @@ Usage:
     python build.py -s sources/         # Sources depuis un dossier spécifique
     python build.py -o /var/www/cours/  # Output vers un dossier spécifique
     python build.py --clean             # Nettoie avant de compiler
-
-Structure attendue:
-    cours/
-    ├── collections.toml                # Définition des collections (titre, icône, thème)
-    ├── urgences-aquatiques/            # Dossier physique
-    │   ├── noyade.md                   # collections: iade, du-medecine-urgence
-    │   └── hypothermie.md              # collections: iade
-    ├── trauma/
-    │   └── pendaison.md                # collections: du-medecine-urgence
-    └── images/
 """
 
 import sys
@@ -27,6 +17,10 @@ from pathlib import Path
 from typing import List, Dict
 
 from lib import parse_presentation, HTMLGenerator, PageGenerator, DEFAULT_THEME
+
+
+# Répertoire du script (pour trouver les assets CSS/JS)
+SCRIPT_DIR = Path(__file__).resolve().parent
 
 
 def load_collections_config(source_dir: Path) -> Dict:
@@ -47,7 +41,7 @@ def parse_collections_field(value) -> List[str]:
     return [c.strip() for c in value.split(',') if c.strip()]
 
 
-def compile_course(md_file: Path, output_dir: Path, folder_name: str, assets_relative: str = '../../assets') -> Dict:
+def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
     """Compile un cours et retourne ses métadonnées"""
     print(f"    📄 {md_file.name}...")
     
@@ -57,13 +51,13 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str, assets_rel
     theme = presentation.metadata.get('theme', DEFAULT_THEME)
     collections = parse_collections_field(presentation.metadata.get('collections'))
     
-    # Créer le dossier du cours (sous-dossier du dossier physique)
+    # Créer le dossier du cours
     course_dir = output_dir / folder_name / md_file.stem
     course_dir.mkdir(parents=True, exist_ok=True)
     
-    # Générer la présentation
-    generator = HTMLGenerator(base_path=md_file.parent, theme=theme)
-    html = generator.generate(presentation, js_uri=f'{assets_relative}/presentation.js')
+    # Générer la présentation (CSS et JS inlinés)
+    generator = HTMLGenerator(base_path=SCRIPT_DIR, theme=theme)
+    html = generator.generate(presentation)
     
     (course_dir / 'index.html').write_text(html, encoding='utf-8')
     
@@ -93,25 +87,15 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str, assets_rel
     }
 
 
-def copy_assets(output_dir: Path, source_dir: Path):
-    """Copie les assets partagés (CSS, JS, fonts)"""
-    assets_dir = output_dir / 'assets'
-    assets_dir.mkdir(parents=True, exist_ok=True)
-    
-    css_src = source_dir / 'css' / 'style.css'
-    if css_src.exists():
-        shutil.copy(css_src, assets_dir / 'style.css')
-    
-    js_src = source_dir / 'js' / 'presentation.js'
-    if js_src.exists():
-        shutil.copy(js_src, assets_dir / 'presentation.js')
-    
-    fonts_src = source_dir / 'fonts'
+def copy_assets(output_dir: Path):
+    """Copie les fonts (CSS/JS sont inlinés dans les HTML)"""
+    fonts_src = SCRIPT_DIR / 'fonts'
     if fonts_src.exists():
         fonts_dst = output_dir / 'fonts'
         if fonts_dst.exists():
             shutil.rmtree(fonts_dst)
         shutil.copytree(fonts_src, fonts_dst)
+        print(f"  📁 Fonts copiées")
 
 
 def copy_images(output_dir: Path, source_dir: Path) -> int:
@@ -212,10 +196,9 @@ def build(
     total_images = copy_images(output_dir, source_dir)
     print(f"🖼️  {total_images} image(s) copiée(s)")
     
-    # Copier les assets
+    # Copier les fonts
     print("📦 Copie des assets...")
-    script_dir = Path(__file__).parent
-    copy_assets(output_dir, script_dir)
+    copy_assets(output_dir)
     
     # Compiler les cours
     print("🏗️  Compilation des cours...")
@@ -246,7 +229,7 @@ def build(
             print(f"  ⚠️  Collection '{coll_id}' utilisée mais non définie dans collections.toml")
     
     # Générer les pages avec PageGenerator
-    page_gen = PageGenerator()
+    page_gen = PageGenerator(base_path=SCRIPT_DIR)
     
     # Pages de collections (seulement celles définies dans le TOML et qui ont des cours)
     print("📋 Génération des pages de collections...")
@@ -323,4 +306,3 @@ Exemples:
 
 if __name__ == '__main__':
     main()
-
