@@ -10,25 +10,31 @@ subtitle: Sous-titre optionnel
 author: Nom de l'auteur
 date: Janvier 2025
 theme: ocean
+collections: iade, du-medecine-urgence
 university: Institution
 department: Département
 ---
 
-# Titre de la Première section
-> Sous-titre affiché sur la slide
+# Première Section
 
-## Première Sous-Section
-...
+## Première Slide
+> Sous-titre optionnel
 
-## Deuxième Sous-Section
+- Point clé 1
+- Point clé 2
+
+:::details
+Explications détaillées...
+:::questions
+- Question 1 ?
+
+## Deuxième Slide
 ...
 
 # Deuxième Section
 
-# Conclusion
-> Citation ou message clé
-
-:::no-annexes
+## Autre Slide
+...
 ```
 
 ## Métadonnées (front matter)
@@ -38,10 +44,11 @@ Le fichier commence par un bloc YAML entre `---` :
 | Champ | Description | Obligatoire |
 |-------|-------------|-------------|
 | `title` | Titre de la présentation | Oui |
-| `subtitle` | Sous-titre | Non |
+| `subtitle` | Sous-titre (affiché sur la slide de titre) | Non |
 | `author` | Auteur(s) | Non |
 | `date` | Date | Non |
 | `theme` | Thème de couleurs | Non |
+| `collections` | Collections (séparées par virgules) | Non |
 | `university` | Institution | Non |
 | `department` | Département/Service | Non |
 
@@ -53,22 +60,31 @@ Le fichier commence par un bloc YAML entre `---` :
 | `glacier` | Bleu froid | Hypothermie, froid |
 | `bordeaux` | Rouge sombre | Pendaison, strangulation, trauma |
 
-## Types de slides
+### Collections
 
-### Slide de Section (`#`)
-```markdown
-# Titre Principal
-> Sous-titre ou citation
-
-:::no-annexes
+Les collections regroupent les cours par thématique ou destinataire :
+```yaml
+collections: iade, du-medecine-urgence
 ```
 
-- Affichée en plein écran avec fond dégradé
-- Pas de détails ni questions par défaut
+Les collections doivent être définies dans `collections.toml` à la racine du projet.
+
+## Types de slides
+
+### Slide de titre (automatique)
+
+Générée automatiquement depuis les métadonnées `title` et `subtitle`.
+
+### Slide de section (`#`)
+```markdown
+# Nom de la Section
+```
+
+Crée une slide de transition avec le titre de la section.
 
 ### Slide de contenu (`##`)
 ```markdown
-## Titre de la SousSection
+## Titre de la Slide
 > Sous-titre optionnel
 
 - Premier point clé
@@ -86,11 +102,9 @@ Le fichier commence par un bloc YAML entre `---` :
 
 Paragraphe détaillé...
 
-> Définition importante à retenir
-
 ![Schéma explicatif](schema.png)
 
-[@ref auteurs="Dupont J, Martin P" titre="Article" revue="Journal" date="2024" doi="10.1234/xyz"]
+[@ref auteurs="Dupont J" titre="Article" revue="Journal" date="2024" doi="10.1234/xyz"]
 
 :::questions
 
@@ -102,22 +116,18 @@ Paragraphe détaillé...
 ```markdown
 ## Image: nom_image.svg
 > Légende de l'image
-Caption: Texte alternatif
+Caption: Texte alternatif pour accessibilité
 
 :::details
 
 **Explication de l'image:**
 
-Description détaillée du schéma...
+Description détaillée...
 
 :::questions
 
 - Que représente ce schéma ?
 ```
-
-- L'image occupe la majeure partie de l'écran
-- Peut avoir des détails et questions associés
-- Les images locales sont dans le dossier `images/`
 
 ## Éléments de contenu
 
@@ -128,42 +138,53 @@ Description détaillée du schéma...
 - Point avec `code`
 ```
 
-### Blockquote / Citation (slide principale)
+### Sous-titre de slide
+
+Le `>` juste après un titre `##` devient le sous-titre :
 ```markdown
-> Cette citation apparaîtra dans un encadré stylisé
+## Ma Slide
+> Ce texte est le sous-titre
 ```
 
-Le `>` juste après un titre (`#` ou `##`) devient le sous-titre.
-Le `>` juste après une slide d'image (`## Image:`) devient la légende de l'image.
-Le `>` ailleurs dans la slide principale devient un blockquote.
+### Blockquote / Citation
+
+Le `>` ailleurs dans la slide devient un blockquote stylisé :
+```markdown
+## Ma Slide
+
+- Point 1
+
+> Cette citation apparaîtra dans un encadré
+
+- Point 2
+```
 
 ### Sous-titre intermédiaire (`###`)
 ```markdown
-### Catégorie
+### Catégorie A
 
 - Point 1
 - Point 2
 
-### Autre catégorie
+### Catégorie B
 
 - Point 3
 ```
 
 ## Section détails (`:::details`)
 
-Contient les explications approfondies.
+Contient les explications approfondies, affichées en appuyant sur `→`.
 
 ### Éléments supportés
 
 **Sous-titres en gras :**
 ```markdown
 **Définition:**
-**Mécanisme**
 ```
 
 **Paragraphes :**
 ```markdown
-Texte explicatif simple sur une ou plusieurs lignes.
+Texte explicatif sur une ou plusieurs lignes.
 ```
 
 **Listes :**
@@ -179,7 +200,7 @@ Texte explicatif simple sur une ou plusieurs lignes.
 
 **Images :**
 ```markdown
-![Légende de l'image](nom_image.png)
+![Légende](nom_image.png)
 ```
 
 **Références bibliographiques :**
@@ -192,12 +213,7 @@ Champs disponibles pour les références :
 - `titre` — Titre de l'article
 - `revue` — Nom du journal
 - `date` — Année de publication
-- `doi` — Identifiant DOI (génère un lien)
-
-**Formatage inline :**
-- `**gras**` → **gras**
-- `*italique*` → *italique*
-- `` `code` `` → `code`
+- `doi` — Identifiant DOI (génère un lien cliquable)
 
 ## Section questions (`:::questions`)
 ```markdown
@@ -205,8 +221,9 @@ Champs disponibles pour les références :
 
 - Quelle est la définition de X ?
 - Citez 3 exemples de Y.
-- Expliquez le mécanisme de Z.
 ```
+
+Affichées en appuyant sur `→` depuis les détails.
 
 ## Désactiver les annexes (`:::no-annexes`)
 ```markdown
@@ -218,18 +235,19 @@ Champs disponibles pour les références :
 :::no-annexes
 ```
 
+Cette slide n'aura pas de détails ni de questions.
+
 ## Gestion des images
 
-### Structure des fichiers
+### Structure recommandée
 ```
-projet/
-├── cours/
-│   ├── noyade.md
-│   ├── hypothermie.md
-│   ├── szpilman.svg
-│   ├── schema_thermo.png
-│   └── photo_cas.jpg
-└── build.py
+cours/
+├── images/                   # Images partagées entre tous les cours
+│   └── schema-general.svg
+└── ma-collection/
+    ├── cours.md
+    └── images/               # Images spécifiques à cette collection
+        └── schema-local.png
 ```
 
 ### Référencement
@@ -242,10 +260,10 @@ projet/
 
 **Dans les détails :**
 ```markdown
-![Légende](szpilman.svg)
+![Légende](schema.png)
 ```
 
-**Image externe (URL complète) :**
+**Image externe :**
 ```markdown
 ![Légende](https://example.com/image.png)
 ```
@@ -267,14 +285,12 @@ subtitle: Du sauvetage à la réanimation
 author: Dr Jean Dupont
 date: Janvier 2025
 theme: ocean
+collections: iade, du-medecine-urgence
 university: CHU Bordeaux
 department: SAMU 33
 ---
 
-# Prise en Charge de la Noyade
-> Du sauvetage à la réanimation
-
-:::no-annexes
+# Physiopathologie
 
 ## Définition et Épidémiologie
 > OMS 2021
@@ -295,63 +311,71 @@ department: SAMU 33
 
 > La noyade est une insuffisance respiratoire résultant de la submersion ou de l'immersion en milieu liquide.
 
-Cette définition inclut les cas mortels et non mortels.
-
-**Épidémiologie française:**
-
-En France, environ 1000 décès par an sont liés à la noyade.
-
-[@ref auteurs="InVS" titre="Enquête NOYADES" revue="BEH" date="2023"]
+[@ref auteurs="OMS" titre="Global Report on Drowning" date="2021"]
 
 :::questions
 
 - Quelle est la définition OMS de la noyade ?
-- Citez 3 facteurs de risque de noyade.
+- Citez 3 facteurs de risque.
 
 ## Image: szpilman.svg
 > Classification de Szpilman — Arbre décisionnel
-Caption: Algorithme de classification des noyades
 
 :::details
 
-**Utilisation de l'arbre:**
+**Utilisation:**
 
-Cet algorithme permet de classifier rapidement la gravité d'une noyade en 6 stades.
-
-**Stade 0 (Rescue):** Patient conscient, pas de toux, pas de détresse.
+Cet algorithme permet de classifier rapidement la gravité.
 
 [@ref auteurs="Szpilman D" titre="Drowning" revue="N Engl J Med" date="2012" doi="10.1056/NEJMra1013317"]
 
 :::questions
 
-- À quel stade les frissons disparaissent-ils ?
 - Quel stade correspond à l'arrêt cardiaque ?
 
-# Conclusion
-> Chaque minute compte
+# Prise en charge
 
-:::no-annexes
+## Sur le terrain
+
+- Extraction de l'eau
+- Évaluation ABCDE
+
+:::details
+
+**Priorités:**
+
+La ventilation est prioritaire sur les compressions thoraciques.
+
+:::questions
+
+- Quelle est la priorité initiale ?
+
+# Conclusion
 ```
 
 ## Bonnes pratiques
 
-### Points clés (slide principale)
-- 3 à 6 points maximum
+### Slides principales
+- 3 à 6 points maximum par slide
 - Phrases courtes (< 10 mots)
 - Utiliser les blockquotes pour les définitions clés
 
 ### Détails
 - Structurer avec des sous-titres en gras
 - Un paragraphe = une idée
-- Inclure les images/schémas pertinents
 - Toujours citer les références
 
 ### Questions
 - 2 à 4 questions par slide
-- Mélanger factuelles et réflexives
-- Couvrir les points essentiels
+- Mélanger questions factuelles et réflexives
 
 ### Images
 - SVG pour les schémas (qualité, légèreté)
-- Noms explicites (ex: `szpilman_arbre.svg`)
+- Noms de fichiers explicites
 - Toujours ajouter une légende
+
+### Collections
+- Définir les collections dans `collections.toml`
+- Un cours peut appartenir à plusieurs collections
+- Utiliser des IDs en minuscules avec tirets (`du-medecine-urgence`)
+

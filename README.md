@@ -1,146 +1,163 @@
-# Compilateur de Présentations Markdown
+# Compilateur de Présentations Médicales
 
-Transforme des fichiers Markdown structurés en présentations HTML interactives avec navigation clavier/tactile.
-
-## Fonctionnalités
-
-- **Slides principales** avec points clés
-- **Slides de détails** pour approfondir (texte, images)
-- **Slides de questions** pour la révision
-- **Navigation** : flèches clavier + swipe tactile
-- **Thèmes** : ocean, glacier, bordeaux
-- **Export document** : extraction des détails en HTML imprimable/PDF
-- **Catalogue** : génération automatique d'un index des cours
+Transforme des fichiers Markdown en présentations HTML interactives avec navigation clavier, détails et questions de révision.
 
 ## Installation
-
 ```bash
+# Cloner le dépôt
 git clone <repo>
 cd cours
+
+# Aucune dépendance externe requise (Python 3.11+)
 ```
 
-Aucune dépendance externe requise (Python 3.10+).
+## Structure du projet
+```
+cours/
+├── build.py                  # Script de build principal
+├── compile_cours.py          # Compilation d'un seul cours
+├── extract_details.py        # Extraction du document imprimable
+├── collections.toml          # Définition des collections
+├── lib/                      # Bibliothèque Python
+│   ├── __init__.py
+│   ├── config.py             # Configuration (thèmes, assets)
+│   ├── models.py             # Modèles de données
+│   ├── parser.py             # Parser Markdown
+│   └── generator.py          # Générateurs HTML
+├── css/
+│   └── style.css             # Styles des présentations
+├── js/
+│   └── presentation.js       # Navigation interactive
+├── fonts/                    # Polices locales (Crimson Pro, Work Sans)
+├── images/                   # Images partagées
+└── <dossiers>/               # Dossiers de cours
+    ├── cours1.md
+    ├── cours2.md
+    └── images/               # Images locales au dossier
+```
 
 ## Utilisation
 
-### Compiler un seul cours
+### Build complet
+```bash
+# Compile tous les cours et génère le catalogue
+python build.py
 
+# Options
+python build.py --clean                  # Nettoie avant compilation
+python build.py -s ./sources -o ./dist   # Dossiers personnalisés
+python build.py --title "Mes Formations" # Titre du site
+```
+
+### Compilation d'un seul cours
 ```bash
 python compile_cours.py mon_cours.md
-python compile_cours.py mon_cours.md -o presentation.html
+python compile_cours.py mon_cours.md -o output.html
 python compile_cours.py mon_cours.md --theme glacier
 ```
 
-### Extraire les détails (document imprimable)
-
+### Extraction des détails seuls
 ```bash
 python extract_details.py mon_cours.md
+python extract_details.py mon_cours.md -o details.html
 ```
 
-### Build complet (tous les cours + catalogue)
+## Collections
 
-```bash
-python build.py                              # Compile ./*.md → ./dist/
-python build.py -s sources/ -o public/       # Dossiers personnalisés
-python build.py --clean --title "Mes Cours"  # Nettoie et titre custom
+Les collections permettent de regrouper les cours par thématique ou par destinataire.
+
+### Définition (`collections.toml`)
+```toml
+[iade]
+title = "Formation IADE"
+description = "Formation initiale infirmiers anesthésistes"
+icon = "🎓"
+theme = "ocean"
+
+[du-medecine-urgence]
+title = "DU Médecine d'Urgence"
+description = "Formation universitaire en médecine d'urgence"
+icon = "🏥"
+theme = "bordeaux"
+
+[bibliographies]
+title = "Revues de littérature"
+description = "Présentations de service"
+icon = "📚"
+theme = "glacier"
 ```
 
-Structure générée :
-```
-dist/
-├── index.html              # Catalogue des cours
-├── assets/
-│   ├── style.css
-│   └── presentation.js
-├── noyade/
-│   ├── index.html          # Présentation
-│   └── details.html        # Document imprimable
-└── hypothermie/
-    ├── index.html
-    └── details.html
+### Attribution dans les cours
+
+Chaque cours déclare ses collections dans ses métadonnées :
+```yaml
+---
+title: Prise en Charge de la Noyade
+author: Dr Jean Dupont
+collections: iade, du-medecine-urgence
+---
 ```
 
-### Déployer vers un serveur FTP
-
-```bash
-python deploy.py --host ftp.example.com --user admin
-```
-
-Ou avec un fichier `.env` :
-```env
-FTP_HOST=ftp.example.com
-FTP_USER=admin
-FTP_PASSWORD=secret
-FTP_PATH=/public_html/cours
-```
-
-## Workflow recommandé
-
-```bash
-# 1. Éditer les cours .md
-vim mon_cours.md
-
-# 2. Build local
-python build.py --clean
-
-# 3. Prévisualiser
-open dist/index.html
-
-# 4. Déployer
-python deploy.py
-```
-
-### Avec Git + cPanel
-
-1. Créer un repo Git avec vos fichiers `.md`
-2. Dans cPanel > Git Version Control, cloner le repo
-3. Ajouter un cron job :
-   ```bash
-   cd /home/user/cours && git pull && python build.py -o /home/user/public_html/cours
-   ```
-
-## Navigation dans la présentation
-
-| Action | Clavier | Tactile |
-|--------|---------|---------|
-| Slide suivante | ↓ | Swipe haut |
-| Slide précédente | ↑ | Swipe bas |
-| Voir détails | → | Swipe gauche |
-| Voir questions | → (depuis détails) | Swipe gauche |
-| Retour | ← | Swipe droite |
+Un cours peut appartenir à plusieurs collections.
 
 ## Thèmes
 
-| Thème | Couleurs | Usage suggéré |
-|-------|----------|---------------|
-| `ocean` | Bleu-vert turquoise | Noyade, milieu aquatique |
+| Thème | Couleur | Usage suggéré |
+|-------|---------|---------------|
+| `ocean` | Bleu-vert | Noyade, milieu aquatique (défaut) |
 | `glacier` | Bleu froid | Hypothermie, froid |
-| `bordeaux` | Rouge sombre | Trauma, pendaison |
+| `bordeaux` | Rouge sombre | Pendaison, strangulation, trauma |
 
-## Structure du projet
+Le thème peut être défini :
+- Par collection dans `collections.toml`
+- Par cours dans les métadonnées (`theme: glacier`)
 
+## Structure générée
 ```
-cours/
-├── build.py              # Build tous les cours + index
-├── deploy.py             # Déploiement FTP
-├── compile_cours.py      # Compilateur unitaire
-├── extract_details.py    # Extracteur de détails
-├── css/
-│   └── style.css
-├── js/
+dist/
+├── index.html                    # Page d'accueil (liste des collections)
+├── collections/
+│   ├── iade.html                 # Page de la collection IADE
+│   └── du-medecine-urgence.html
+├── dossier1/
+│   └── noyade/
+│       ├── index.html            # Présentation interactive
+│       └── details.html          # Document imprimable
+├── dossier2/
+│   └── hypothermie/
+│       └── ...
+├── assets/
+│   ├── style.css
 │   └── presentation.js
-└── lib/
-    ├── config.py         # Thèmes, marqueurs
-    ├── models.py         # Modèles de données
-    ├── parser.py         # Parser Markdown
-    └── generator.py      # Générateur HTML
+├── fonts/
+└── images/
 ```
 
-## Documentation
+## Navigation dans les présentations
 
-- [FORMAT.md](FORMAT.md) — Syntaxe Markdown pour les présentations
-- [PROMPT.md](PROMPT.md) — Instructions pour générer du contenu avec un LLM
+| Touche | Action |
+|--------|--------|
+| `↓` ou `J` | Slide suivante |
+| `↑` ou `K` | Slide précédente |
+| `→` ou `L` | Détails / Questions |
+| `←` ou `H` | Retour |
+| `Home` | Première slide |
+| `End` | Dernière slide |
 
-## Licence
+## Déploiement cPanel
 
-MIT
+Créer un fichier `.cpanel.yml` à la racine du dépôt :
+```yaml
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/$USER/public_html/cours
+    - mkdir -p $DEPLOYPATH
+    - /usr/bin/python3 /home/$USER/repositories/cours/build.py -s /home/$USER/repositories/cours -o $DEPLOYPATH --clean --title "Formations Médicales"
+```
+
+Chaque `git push` déclenche automatiquement le build.
+
+## Formats supportés
+
+- Voir [FORMAT.md](FORMAT.md) pour la syntaxe Markdown complète
