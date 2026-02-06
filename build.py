@@ -50,25 +50,31 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
     
     theme = presentation.metadata.get('theme', DEFAULT_THEME)
     collections = parse_collections_field(presentation.metadata.get('collections'))
+    status = presentation.metadata.get('status', 'published')
     
     # Créer le dossier du cours
     course_dir = output_dir / folder_name / md_file.stem
     course_dir.mkdir(parents=True, exist_ok=True)
     
     # Générer la présentation (CSS et JS inlinés)
-    generator = HTMLGenerator(base_path=SCRIPT_DIR, theme=theme)
-    html = generator.generate(presentation)
+    if status == "draft":
+        html = generate_draft_page(presentation, theme)
+        print(f"      ⏸️  Draft (non publié)")
+    else:
+        generator = HTMLGenerator(base_path=SCRIPT_DIR, theme=theme)
+        html = generator.generate(presentation)
     
     (course_dir / 'index.html').write_text(html, encoding='utf-8')
     
     # Générer les détails (document imprimable)
-    from extract_details import extract_details
-    details_output = course_dir / 'details.html'
+    if status != 'draft':
+        from extract_details import extract_details
+        details_output = course_dir / 'details.html'
     
-    import io
-    from contextlib import redirect_stdout
-    with redirect_stdout(io.StringIO()):
-        extract_details(md_file, details_output)
+        import io
+        from contextlib import redirect_stdout
+        with redirect_stdout(io.StringIO()):
+            extract_details(md_file, details_output)
     
     return {
         'slug': md_file.stem,
@@ -78,6 +84,7 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
         'author': presentation.metadata.get('author', ''),
         'date': presentation.metadata.get('date', ''),
         'theme': theme,
+        'status': status,
         'university': presentation.metadata.get('university', ''),
         'department': presentation.metadata.get('department', ''),
         'total_slides': presentation.total_slides,
@@ -86,6 +93,82 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
         'details_url': f'{folder_name}/{md_file.stem}/details.html',
     }
 
+def generate_draft_page(presentation, theme: str) -> str:
+    """Génère une page placeholder pour un cours en draft"""
+    from lib import THEMES, DEFAULT_THEME
+    from lib.config import CSS_FONTS
+    
+    colors = THEMES.get(theme, THEMES[DEFAULT_THEME])
+    
+    return f'''<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{presentation.title} - En cours d'actualisation</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a4d68'/><path d='M14 8h4v16h-4zM8 14h16v4H8z' fill='%23ffffff'/></svg>">
+    <style>
+        {CSS_FONTS}
+        
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        
+        body {{
+            font-family: 'Work Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, {colors['primary']} 0%, {colors['secondary']} 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }}
+        
+        .container {{
+            max-width: 500px;
+        }}
+        
+        .icon {{
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }}
+        
+        h1 {{
+            font-family: 'Crimson Pro', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }}
+        
+        p {{
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }}
+        
+        .back-link {{
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }}
+        
+        .back-link:hover {{
+            background: rgba(255, 255, 255, 0.3);
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔄</div>
+        <h1>{presentation.title}</h1>
+        <p>Ce cours est en cours d'actualisation.<br>Revenez bientôt !</p>
+        <a href="javascript:history.back()" class="back-link">← Retour</a>
+    </div>
+</body>
+</html>'''
 
 def copy_assets(output_dir: Path):
     """Copie les fonts (CSS/JS sont inlinés dans les HTML)"""

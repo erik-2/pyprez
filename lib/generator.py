@@ -568,6 +568,7 @@ class PageGenerator(BaseGenerator):
         cards_html = []
         for course in courses_sorted:
             colors = self._get_theme_colors(course.get('theme'))
+            status = course.get('status', 'puplished')
             
             subtitle = f'<p class="course-subtitle">{course["subtitle"]}</p>' if course.get('subtitle') else ''
             meta_parts = []
@@ -578,7 +579,22 @@ class PageGenerator(BaseGenerator):
             meta_parts.append(f'📊 {course["total_slides"]} slides')
             meta_html = ' · '.join(meta_parts)
             
-            cards_html.append(f'''
+            if status == 'draft':
+                cards_html.append(f'''
+        <div class="course-card course-draft" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
+            <div class="course-header">
+                <h2 class="course-title">{course['title']}</h2>
+                {subtitle}
+                <span class="draft-badge">🔄 En cours d'actualisation</span>
+            </div>
+            <div class="course-meta">{meta_html}</div>
+            <div class="course-actions">
+                <span class="btn btn-disabled">▶ Présentation</span>
+                <span class="btn btn-disabled">📄 Document</span>
+            </div>
+        </div>''')
+            else:
+                cards_html.append(f'''
             <div class="course-card" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
                 <div class="course-header">
                     <h2 class="course-title">{course['title']}</h2>
@@ -600,7 +616,37 @@ class PageGenerator(BaseGenerator):
     <link rel="icon" href="{self.FAVICON}">
     <style>
         {self._get_page_css()}
-        
+        .course-draft {{
+    opacity: 0.7;
+}}
+
+.course-draft .course-header {{
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}}
+
+.draft-badge {{
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    font-size: 0.85rem;
+}}
+
+.btn-disabled {{
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    flex: 1;
+    justify-content: center;
+}}
         .container {{ max-width: 1000px; }}
         
         .back-link {{
