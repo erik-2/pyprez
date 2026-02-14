@@ -12,7 +12,6 @@ import argparse
 import webbrowser
 import http.server
 import socketserver
-import tempfile
 import subprocess
 from pathlib import Path
 
