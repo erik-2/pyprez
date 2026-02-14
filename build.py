@@ -252,7 +252,7 @@ def build(
 ):
     """Build complet : compile tous les cours et génère les pages"""
     
-    print(f"🔨 Build des cours")
+    #print(f"🔨 Build des cours")
     print(f"   Source : {source_dir}")
     print(f"   Output : {output_dir}")
     

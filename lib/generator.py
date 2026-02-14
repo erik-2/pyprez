@@ -671,8 +671,12 @@ class PageGenerator(BaseGenerator):
         .collection-icon {{ font-size: 4rem; margin-bottom: 1rem; }}
         header .description {{ font-size: 1.1rem; opacity: 0.9; margin-bottom: 0.5rem; }}
         header .count {{ font-size: 0.95rem; opacity: 0.8; }}
-        
-        .courses-list {{ display: flex; flex-direction: column; gap: 1.5rem; }}
+
+        .courses-list {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }}
         
         .course-card {{
             background: var(--bg-card);
@@ -682,7 +686,7 @@ class PageGenerator(BaseGenerator):
             display: flex;
             flex-direction: column;
         }}
-        .course-card:hover {{ transform: translateX(8px); box-shadow: var(--shadow-hover); }}
+        .course-card:hover {{ transform: translateY(-4px); box-shadow: var(--shadow-hover); }}
         
         .course-header {{
             padding: 1.5rem;
