@@ -45,7 +45,7 @@ def main():
     os.chdir(preview_dir)
     
     handler = http.server.SimpleHTTPRequestHandler
-    
+    socketserver.TCPServer.allow_reuse_address = True 
     with socketserver.TCPServer(("", args.port), handler) as httpd:
         url = f"http://localhost:{args.port}"
         print(f"\n🌐 Serveur démarré : {url}")
