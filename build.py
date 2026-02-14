@@ -41,7 +41,7 @@ def parse_collections_field(value) -> List[str]:
     return [c.strip() for c in value.split(',') if c.strip()]
 
 
-def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
+def compile_course(md_file: Path, output_dir: Path, folder_name: str, preview: bool) -> Dict:
     """Compile un cours et retourne ses métadonnées"""
     print(f"    📄 {md_file.name}...")
     
@@ -57,17 +57,19 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str) -> Dict:
     course_dir.mkdir(parents=True, exist_ok=True)
     
     # Générer la présentation (CSS et JS inlinés)
-    if status == "draft":
+    if status == "draft" and not preview:
         html = generate_draft_page(presentation, theme)
         print(f"      ⏸️  Draft (non publié)")
     else:
         generator = HTMLGenerator(base_path=SCRIPT_DIR, theme=theme)
-        html = generator.generate(presentation)
+        html = generator.generate(presentation, is_draft=(status == 'draft'))
+        if status == 'draft':
+            print(f"      👁️  Draft (preview)")
     
     (course_dir / 'index.html').write_text(html, encoding='utf-8')
     
     # Générer les détails (document imprimable)
-    if status != 'draft':
+    if status != 'draft' or preview:
         from extract_details import extract_details
         details_output = course_dir / 'details.html'
     
@@ -248,7 +250,8 @@ def build(
     source_dir: Path,
     output_dir: Path,
     site_title: str = "Formations Médicales",
-    clean: bool = False
+    clean: bool = False,
+    preview: bool = False
 ):
     """Build complet : compile tous les cours et génère les pages"""
     
@@ -291,7 +294,7 @@ def build(
         print(f"  📁 {folder_name}/")
         for md_file in sorted(md_files):
             try:
-                metadata = compile_course(md_file, output_dir, folder_name)
+                metadata = compile_course(md_file, output_dir, folder_name, preview)
                 all_courses.append(metadata)
             except Exception as e:
                 print(f"    ❌ Erreur sur {md_file.name}: {e}")
@@ -375,11 +378,13 @@ Exemples:
                         help='Titre du site')
     parser.add_argument('--clean', action='store_true',
                         help='Nettoyer le dossier output avant compilation')
+    parser.add_argument('--preview', action='store_true',
+                        help='Générer les drafts comme des cours normaux (pour prévisualisation)')
     
     args = parser.parse_args()
     
     try:
-        build(args.source, args.output, args.title, args.clean)
+        build(args.source, args.output, args.title, args.clean, args.preview)
     except Exception as e:
         print(f"❌ Erreur : {e}")
         import traceback

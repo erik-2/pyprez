@@ -155,11 +155,17 @@ a {{
 class HTMLGenerator(BaseGenerator):
     """Génère le HTML d'une présentation"""
     
-    def generate(self, presentation: Presentation) -> str:
+
+    def generate(self, presentation: Presentation, is_draft: bool) -> str:
         """Génère le HTML complet de la présentation avec CSS et JS inlinés"""
         slides_html = self._generate_slides(presentation)
         css = self._load_css()
         js = self._load_js()
+        draft_banner = ''
+        draft_css = ''
+        if is_draft:
+            draft_banner = '<div class="draft-banner">🔄 DRAFT — En cours d\'actualisation</div>'
+            draft_css = '''.draft-banner { position: fixed; top: 0; left: 0; right: 0; background: #f59e0b; color: #000; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem; z-index: 9999;}'''
         
         return f'''<!DOCTYPE html>
 <html lang="fr">
@@ -169,10 +175,11 @@ class HTMLGenerator(BaseGenerator):
     <title>{presentation.title}</title>
     <link rel="icon" href="{self.FAVICON}">
     <style>
-{css}
+{css}{draft_css}
     </style>
 </head>
 <body>
+            {draft_banner}
     <div class="presentation-container">
         <div class="slides-grid" id="slidesGrid">
 {slides_html}
