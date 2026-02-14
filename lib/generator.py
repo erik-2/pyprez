@@ -439,6 +439,9 @@ class HTMLGenerator(BaseGenerator):
 
 class PageGenerator(BaseGenerator):
     """Génère les pages statiques (accueil, collections)"""
+    def __init__(self, base_path: Optional[Path] = None, theme: Optional[str] = None, preview: bool = False):
+        super().__init__(base_path, theme)
+        self.preview = preview
     
     def _get_page_css(self) -> str:
         """CSS spécifique aux pages statiques"""
@@ -586,7 +589,7 @@ class PageGenerator(BaseGenerator):
             meta_parts.append(f'📊 {course["total_slides"]} slides')
             meta_html = ' · '.join(meta_parts)
             
-            if status == 'draft':
+            if status == 'draft' and not self.preview:
                 cards_html.append(f'''
         <div class="course-card course-draft" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
             <div class="course-header">
@@ -600,6 +603,21 @@ class PageGenerator(BaseGenerator):
                 <span class="btn btn-disabled">📄 Document</span>
             </div>
         </div>''')
+            elif status == 'draft' and self.preview:
+                # Carte active avec badge draft (preview)
+                cards_html.append(f'''
+    <div class="course-card course-draft-preview" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
+        <div class="course-header">
+            <h2 class="course-title">{course['title']}</h2>
+            {subtitle}
+            <span class="draft-badge">🔄 Draft</span>
+        </div>
+        <div class="course-meta">{meta_html}</div>
+        <div class="course-actions">
+            <a href="../{course['url']}" class="btn btn-warning">👁️ Prévisualiser</a>
+            <a href="../{course['details_url']}" class="btn btn-secondary">📄 Document</a>
+        </div>
+    </div>''')
             else:
                 cards_html.append(f'''
             <div class="course-card" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
@@ -638,6 +656,12 @@ class PageGenerator(BaseGenerator):
     background: rgba(255, 255, 255, 0.2);
     border-radius: 1rem;
     font-size: 0.85rem;
+}}
+.btn-warning {{ background: #f59e0b; color: #000; }}
+.btn-warning:hover {{ filter: brightness(1.1); }}
+
+.course-draft-preview .course-header {{
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 }}
 
 .btn-disabled {{

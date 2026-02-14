@@ -315,7 +315,7 @@ def build(
             print(f"  ⚠️  Collection '{coll_id}' utilisée mais non définie dans collections.toml")
     
     # Générer les pages avec PageGenerator
-    page_gen = PageGenerator(base_path=SCRIPT_DIR)
+    page_gen = PageGenerator(base_path=SCRIPT_DIR, preview=preview)
     
     # Pages de collections (seulement celles définies dans le TOML et qui ont des cours)
     print("📋 Génération des pages de collections...")
