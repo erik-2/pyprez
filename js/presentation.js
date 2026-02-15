@@ -149,6 +149,7 @@ const PresentationNav = (function() {
                     currentSlide++;
                     currentView = 0;
                     updatePosition();
+                    updateHash();
                 }
                 break;
             
@@ -158,6 +159,7 @@ const PresentationNav = (function() {
                     currentSlide--;
                     currentView = 0;
                     updatePosition();
+                    updateHash();
                 }
                 break;
             
@@ -244,8 +246,18 @@ const PresentationNav = (function() {
         currentSlide = 0;
         currentView = 0;
         updatePosition();
+        initFromHash();
 
-        console.log(`✅ PresentationNav: ${totalSlides} slides`);
+    }
+
+    function initFromHash() {
+       const hash = window.location.hash;
+        if (hash && hash.startsWith('#slide-')) {
+            const slideNum = parseInt(hash.replace('#slide-', ''), 10);
+            if (!isNaN(slideNum) && slideNum > 0) {
+                goTo(slideNum);
+            }
+        }
     }
 
     function destroy() {
@@ -254,11 +266,17 @@ const PresentationNav = (function() {
         document.removeEventListener('touchend', handleTouchEnd);
     }
 
+    function updateHash() {
+        const slideNum = currentSlide;
+        history.replaceState(null, null, `#slide-${slideNum}`);
+    }
+
     function goTo(slideIndex, view = 0) {
         if (slideIndex < 0 || slideIndex >= totalSlides) return;
         currentSlide = slideIndex;
         currentView = Math.min(view, getMaxView(slideIndex));
         updatePosition();
+        updateHash(slideIndex);
     }
 
     function getCurrentPosition() {
