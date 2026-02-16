@@ -51,7 +51,7 @@ def parse_presentation(md_content: str) -> Presentation:
         line = lines[i].strip()
         
         # Nouvelle section (# )
-        if line.startswith(MD_PREFIXES['h1']) and not line.startswith(MD_PREFIXES['h2']):
+        if line.startswith(MD_PREFIXES['h1']):
             if current_slide:
                 slides.append(current_slide)
             current_slide = Slide(
@@ -166,25 +166,22 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
         line = lines[i].strip()
         
         # Section principale (# )
-        if line.startswith('# ') and not line.startswith('## '):
-            if current_section and current_section.details:
-                sections.append(current_section)
-            
-            title = line[2:].strip()
+        if line.startswith(MD_PREFIXES['h1']): 
+            title = line[len(MD_PREFIXES['h1']):].strip()
             current_main_section = Section(title=title, level=1)
             sections.append(current_main_section)
             current_section = None
             in_details = False
         
         # Sous-section (## ) ou Image (## Image:)
-        elif line.startswith('## '):
+        elif line.startswith(MD_PREFIXES['h2']):
             if current_section and current_section.details:
                 sections.append(current_section)
             
             if line.startswith(MD_PREFIXES['image']):
                 title = line[len(MD_PREFIXES['image']):].strip()
             else:
-                title = line[3:].strip()
+                title = line[len(MD_PREFIXES['h2']):].strip()
             
             current_section = Section(title=title, level=2)
             in_details = False
