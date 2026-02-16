@@ -167,6 +167,8 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
         
         # Section principale (# )
         if line.startswith(MD_PREFIXES['h1']): 
+            if current_section and current_section.details:
+                sections.append(current_section)
             title = line[len(MD_PREFIXES['h1']):].strip()
             current_main_section = Section(title=title, level=1)
             sections.append(current_main_section)
