@@ -201,6 +201,9 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
             if current_section:
                 detail = _parse_detail_line(line)
                 current_section.details.append(detail)
+            elif current_main_section:
+                detail = _parse_detail_line(line)
+                current_main_section.details.append(detail)
         
         i += 1
     

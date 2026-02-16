@@ -109,10 +109,22 @@ def _generate_sections_html(sections: list) -> str:
         if section.level == 1:
             # Section principale
             section_id = section.title.lower().replace(" ", "-")
-            html_parts.append(f'''
+            if section.details:
+                content_html = _generate_section_content(section)
+                html_parts.append(f'''
+        <div class="main-section" id="section-{section_id}">
+            <h1 class="section-title level-1">{section.title}</h1>
+            <div class="section-intro">
+                {content_html}
+            </div>
+        </div>''')
+            else:
+                html_parts.append(f'''
         <div class="main-section" id="section-{section_id}">
             <h1 class="section-title level-1">{section.title}</h1>
         </div>''')
+
+
         else:
             # Sous-section avec détails
             section_id = section.title.lower().replace(" ", "-")
