@@ -70,8 +70,6 @@ const PresentationNav = (function() {
             slideGroups.push(group);
         }
         
-        console.log(`📦 ${slideGroups.length} slides:`, 
-            slideGroups.map((g, i) => `${i}:maxView=${g.maxView}`).join(', '));
     }
 
     function getMaxView(idx) {
@@ -143,6 +141,7 @@ const PresentationNav = (function() {
         }
         
         switch(e.key) {
+            case 'PageDown':
             case 'ArrowDown':
                 e.preventDefault();
                 if (currentSlide < totalSlides - 1) {
@@ -153,6 +152,7 @@ const PresentationNav = (function() {
                 }
                 break;
             
+            case 'PageUp':
             case 'ArrowUp':
                 e.preventDefault();
                 if (currentSlide > 0) {
@@ -177,6 +177,13 @@ const PresentationNav = (function() {
                     currentView--;
                     updatePosition();
                 }
+                break;
+
+            case 'Home':
+                e.preventDefault();
+                currentSlide = 0;
+                updatePosition();
+                updateHash();
                 break;
 
             case 'q':
