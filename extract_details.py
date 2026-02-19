@@ -10,11 +10,62 @@ Usage:
 """
 
 import sys
+import re
 import argparse
 from pathlib import Path
 from datetime import datetime
+from typing import List, Dict, Tuple
 
 from lib import parse_details_only, format_markdown
+
+
+def parse_references_from_details(details: list) -> Tuple[list, Dict[str, dict]]:
+    """
+    Sépare le contenu des définitions de références.
+    Retourne (details_sans_refs, {id: attrs_reference})
+    """
+    content_details = []
+    references = {}
+    
+    for detail in details:
+        if detail['type'] == 'paragraph':
+            # Chercher une définition de référence : [^id]: [@ref ...]
+            ref_def_match = re.match(r'^\[\^(\w+)\]:\s*\[@ref\s+(.+)\]$', detail['content'].strip())
+            if ref_def_match:
+                ref_id = ref_def_match.group(1)
+                ref_attrs_str = ref_def_match.group(2)
+                attrs = {}
+                for m in re.finditer(r'(\w+)="([^"]*)"', ref_attrs_str):
+                    attrs[m.group(1)] = m.group(2)
+                references[ref_id] = attrs
+                continue
+        
+        content_details.append(detail)
+    
+    return content_details, references
+
+
+def format_reference_footnote(attrs: dict) -> str:
+    """Formate une référence pour la liste en bas de section"""
+    parts = []
+    if attrs.get('auteurs'):
+        parts.append(f'{attrs["auteurs"]}')
+    if attrs.get('titre'):
+        parts.append(f'<em>{attrs["titre"]}</em>')
+    if attrs.get('revue'):
+        parts.append(f'{attrs["revue"]}')
+    if attrs.get('date'):
+        parts.append(f'{attrs["date"]}')
+    
+    text = '. '.join(parts)
+    
+    if attrs.get('doi'):
+        doi = attrs["doi"]
+        text += f'. <a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>'
+    
+    return text
+
+
 def generate_details_document(metadata: dict, sections: list) -> str:
     """Génère le document HTML des détails"""
     
@@ -141,16 +192,37 @@ def _generate_sections_html(sections: list) -> str:
 
 
 def _generate_section_content(section) -> str:
-    """Génère le contenu d'une sous-section"""
+    """Génère le contenu d'une sous-section avec gestion des références"""
+    
+    # Séparer les définitions de références du contenu
+    content_details, references = parse_references_from_details(section.details)
+    
+    # Numéroter les références par ordre d'apparition
+    ref_order = []
+    
+    def replace_ref_in_text(text: str) -> str:
+        """Remplace [^id] par le numéro de référence"""
+        def replacer(match):
+            ref_id = match.group(1)
+            if ref_id not in ref_order and ref_id in references:
+                ref_order.append(ref_id)
+            if ref_id in references:
+                num = ref_order.index(ref_id) + 1
+                return f'<sup class="ref-number">{num}</sup>'
+            return match.group(0)  # Garder tel quel si référence non trouvée
+        
+        return re.sub(r'\[\^(\w+)\]', replacer, text)
+    
     content_parts = []
     current_list = False
     
-    for detail in section.details:
+    for detail in content_details:
         if detail['type'] == 'subtitle':
             if current_list:
                 content_parts.append('</ul>')
                 current_list = False
             content = format_markdown(detail['content'])
+            content = replace_ref_in_text(content)
             content_parts.append(f'<div class="detail-subtitle">{content}</div>')
         
         elif detail['type'] == 'list_item':
@@ -158,6 +230,7 @@ def _generate_section_content(section) -> str:
                 content_parts.append('<ul class="detail-list">')
                 current_list = True
             content = format_markdown(detail['content'])
+            content = replace_ref_in_text(content)
             content_parts.append(f'    <li>{content}</li>')
         
         elif detail['type'] == 'image':
@@ -179,9 +252,11 @@ def _generate_section_content(section) -> str:
                 content_parts.append('</ul>')
                 current_list = False
             content = format_markdown(detail['content'])
+            content = replace_ref_in_text(content)
             content_parts.append(f'<blockquote class="detail-blockquote">{content}</blockquote>')
         
         elif detail['type'] == 'reference':
+            # Référence inline ancienne syntaxe ([@ref ...]) - garder compatibilité
             if current_list:
                 content_parts.append('</ul>')
                 current_list = False
@@ -192,16 +267,34 @@ def _generate_section_content(section) -> str:
                 content_parts.append('</ul>')
                 current_list = False
             content = format_markdown(detail['content'])
+            content = replace_ref_in_text(content)
             content_parts.append(f'<p class="detail-paragraph">{content}</p>')
     
     if current_list:
         content_parts.append('</ul>')
     
+    # Ajouter les références en bas de section si présentes
+    if ref_order:
+        ref_items = []
+        for i, ref_id in enumerate(ref_order, 1):
+            if ref_id in references:
+                ref_text = format_reference_footnote(references[ref_id])
+                ref_items.append(f'<li value="{i}">{ref_text}</li>')
+        
+        if ref_items:
+            content_parts.append(f'''
+                <div class="references-section">
+                    <h4>Références</h4>
+                    <ol class="references-list">
+                        {''.join(ref_items)}
+                    </ol>
+                </div>''')
+    
     return '\n                '.join(content_parts)
 
 
 def format_reference_html(attrs: dict) -> str:
-    """Formate une référence bibliographique"""
+    """Formate une référence bibliographique (ancienne syntaxe inline)"""
     parts = []
     if attrs.get('auteurs'):
         parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
@@ -217,183 +310,17 @@ def format_reference_html(attrs: dict) -> str:
     
     return f'<p class="reference">{". ".join(parts)}.</p>'
 
-
 def _get_details_css() -> str:
-    """Retourne le CSS pour le document de détails"""
+    """Charge le CSS depuis le fichier ou retourne un fallback"""
+    css_path = Path(__file__).parent / 'css' / 'details.css'
+    if css_path.exists():
+        return css_path.read_text(encoding='utf-8')
+    
+    # Fallback minimal si fichier non trouvé
     return '''
-        :root {
-            --primary: #0a4d68;
-            --secondary: #088395;
-            --accent: #05bfdb;
-            --text: #1a1a1a;
-            --text-light: #4a5568;
-            --bg: #ffffff;
-            --bg-section: #f8f9fa;
-            --border: #e2e8f0;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        @media print {
-            body { font-size: 11pt; }
-            .no-print { display: none; }
-            a { color: #000; text-decoration: none; }
-            .section { page-break-inside: avoid; }
-            .ref-doi {display: none;}
-        }
-        body {
-            font-family: 'Georgia', serif;
-            line-height: 1.8;
-            color: var(--text);
-            background: var(--bg);
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 2rem;
-            margin-bottom: 3rem;
-        }
-        .header h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem; }
-        .header .subtitle { font-size: 1.2rem; color: var(--secondary); font-style: italic; margin-bottom: 1rem; }
-        .header .metadata { font-size: 0.95rem; color: var(--text-light); }
-        .header .metadata span { margin: 0 0.5rem; }
-        .toc {
-            background: var(--bg-section);
-            border-left: 4px solid var(--accent);
-            padding: 1.5rem;
-            margin-bottom: 3rem;
-            border-radius: 4px;
-        }
-        .toc h2 { font-size: 1.3rem; color: var(--primary); margin-bottom: 1rem; }
-        .toc ul { list-style: none; }
-        .toc li { margin-bottom: 0.5rem; }
-        .toc a { color: var(--secondary); text-decoration: none; }
-        .toc a:hover { color: var(--primary); text-decoration: underline; }
-        .section { margin-bottom: 3rem; }
-        .section-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-        /* Sections principales */
-.main-section {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 3px solid var(--primary);
-}
-
-.main-section:first-child {
-  margin-top: 0;
-  border-top: none;
-}
-
-.section-title.level-1 {
-  font-size: 2rem;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 1.5rem;
-}
-
-/* Sous-sections */
-.sub-section {
-  margin-bottom: 2.5rem;
-  padding-left: 1rem;
-  border-left: 3px solid var(--accent);
-}
-
-.section-title.level-2 {
-  font-size: 1.5rem;
-  color: var(--secondary);
-  margin-bottom: 1rem;
-}
-
-/* Table des matières hiérarchique */
-.toc-list {
-  list-style: none;
-}
-
-.toc-section {
-  margin-bottom: 0.75rem;
-}
-
-.toc-section > a {
-  font-weight: 600;
-  color: var(--primary);
-}
-
-.toc-subsections {
-  list-style: none;
-  margin-left: 1.5rem;
-  margin-top: 0.5rem;
-}
-
-.toc-subsections li {
-  margin-bottom: 0.25rem;
-}
-
-.toc-subsections a {
-  color: var(--secondary);
-  font-weight: 400;
-}
-        .section-content { padding-left: 1rem; }
-        .detail-subtitle { font-size: 1.2rem; color: var(--secondary); font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.8rem; }
-        .detail-paragraph { font-size: 1rem; margin-bottom: 1rem; text-align: justify; }
-        .detail-list { margin-left: 2rem; margin-bottom: 1rem; }
-        .detail-list li { margin-bottom: 0.5rem; }
-        .detail-image {
-            margin: 1.5rem 0;
-            text-align: center;
-        }
-        .detail-blockquote {
-            margin: 1.5rem 0;
-            padding: 1rem 1.5rem;
-            background: rgba(10, 77, 104, 0.08);
-            border-left: 4px solid var(--primary);
-            border-radius: 0 4px 4px 0;
-            font-style: italic;
-        }
-        .detail-image img {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .detail-image figcaption {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-light);
-            font-style: italic;
-        }
-        @media print {
-            .detail-image img {
-                max-height: 300px;
-            }
-        }
-        strong { color: var(--primary); font-weight: 600; }
-        em { font-style: italic; color: var(--text-light); }
-        code { background: var(--bg-section); padding: 0.2rem 0.4rem; border-radius: 3px; font-family: monospace; color: var(--secondary); }
-        .footer { text-align: center; margin-top: 4rem; padding-top: 2rem; border-top: 2px solid var(--border); color: var(--text-light); font-size: 0.9rem; }
-        .print-button {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(10, 77, 104, 0.3);
-        }
-        .print-button:hover { background: var(--secondary); transform: translateY(-2px); }
+        body { font-family: Georgia, serif; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1, h2 { color: #0a4d68; }
     '''
-
 
 def extract_details(md_file: Path, output_file: Path | None = None) -> Path | None:
     """Extrait les sections détails et génère un HTML imprimable"""
@@ -436,6 +363,10 @@ Exemples:
   
 Le script extrait uniquement les sections marquées :::details et crée
 un document élégant prêt à imprimer ou convertir en PDF.
+
+Syntaxe des références:
+  Dans le texte: La noyade cause une hypoxie[^szpilman].
+  Définition:    [^szpilman]: [@ref auteurs="Szpilman D" titre="Drowning" ...]
         '''
     )
     parser.add_argument('input', type=Path, help='Fichier Markdown d\'entrée')
