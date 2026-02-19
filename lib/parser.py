@@ -69,7 +69,7 @@ def parse_presentation(md_content: str) -> Presentation:
                 slides.append(current_slide)
             current_slide = Slide(
                 slide_type=SLIDE_TYPES['image'],
-                number=sum(1 for s in slides if s.slide_type in ('content', 'image')) + 1,
+                number=len(slides) + 1,
                 title=line[len(MD_PREFIXES['image']):].strip(),
                 has_annexes=True
             )
@@ -82,7 +82,7 @@ def parse_presentation(md_content: str) -> Presentation:
                 slides.append(current_slide)
             current_slide = Slide(
                 slide_type=SLIDE_TYPES['content'],
-                number=sum(1 for s in slides if s.slide_type in ('content', 'image')) + 1,
+                number=len(slides) + 1,
                 title=line[len(MD_PREFIXES['h2']):].strip()
             )
             current_section = 'main'
