@@ -325,35 +325,77 @@ class HTMLGenerator(BaseGenerator):
         
         return html
     
+  
     def _slide_details(self, slide: Slide, total: int, has_questions: bool) -> str:
-        """Génère la slide de détails"""
-        paragraphs = '\n'.join(
-            f'                        {format_detail_line(d)}' 
-            for d in slide.details
-        )
+        """Génère la slide de détails avec références en bas"""
+        from .parser import parse_details_with_references
+        
+        content_lines, references = parse_details_with_references(slide.details)
+        
+        # Numéroter les références par ordre d'apparition
+        ref_order = []
+        
+        def replace_ref(match):
+            ref_id = match.group(1)
+            if ref_id not in ref_order:
+                ref_order.append(ref_id)
+            num = ref_order.index(ref_id) + 1
+            return f'<sup class="ref-number">{num}</sup>'
+        
+        # Traiter le contenu et remplacer les appels [^id]
+        paragraphs_html = []
+        for line in content_lines:
+            # Remplacer [^id] par le numéro
+            line_with_refs = re.sub(r'\[\^(\w+)\]', replace_ref, line)
+            paragraphs_html.append(f'                        {format_detail_line(line_with_refs)}')
+        
+        paragraphs = '\n'.join(paragraphs_html)
+        
+        # Générer la liste des références en bas
+        references_html = ''
+        if ref_order:
+            ref_items = []
+            for i, ref_id in enumerate(ref_order, 1):
+                if ref_id in references:
+                    attrs = references[ref_id]
+                    ref_text = format_reference_inline(attrs)
+                    ref_items.append(f'<li value="{i}">{ref_text}</li>')
+            
+            if ref_items:
+                references_html = f'''
+                        <div class="references-section">
+                            <hr>
+                            <h3>Références</h3>
+                            <ol class="references-list">
+                                {''.join(ref_items)}
+                            </ol>
+                        </div>'''
         
         if has_questions:
             nav = '''
-                    <span><span class="key-icon">←</span> Retour</span>
-                    <span><span class="key-icon">→</span> Questions</span>'''
+                        <span><span class="key-icon">←</span> Retour</span>
+                        <span><span class="key-icon">→</span> Questions</span>'''
         else:
             nav = '''
-                    <span><span class="key-icon">←</span> Retour</span>'''
+                        <span><span class="key-icon">←</span> Retour</span>'''
         
         return f'''
 
-            <div class="slide slide-detail">
-                <div class="position-indicator">{slide.number} / {total}</div>
-                <div class="content">
-                    <h2>Détails</h2>
-                    <div class="detail-text">
-{paragraphs}
+                <div class="slide slide-detail">
+                    <div class="position-indicator">{slide.number} / {total}</div>
+                    <div class="content">
+                        <h2>Détails</h2>
+                        <div class="detail-text">
+    {paragraphs}
+    {references_html}
+                        </div>
                     </div>
-                </div>
-                <div class="nav-hint">{nav}
-                </div>
-            </div>'''
-    
+                    <div class="nav-hint">{nav}
+                    </div>
+                </div>'''
+
+
+            
     def _slide_questions(self, slide: Slide, total: int) -> str:
         """Génère la slide de questions"""
         items = '\n'.join(
@@ -774,3 +816,25 @@ class PageGenerator(BaseGenerator):
     </footer>
 </body>
 </html>'''
+
+
+def format_reference_inline(attrs: dict) -> str:
+        """Formate une référence pour la liste en bas de slide"""
+        parts = []
+        if attrs.get('auteurs'):
+            parts.append(f'{attrs["auteurs"]}')
+        if attrs.get('titre'):
+            parts.append(f'<em>{attrs["titre"]}</em>')
+        if attrs.get('revue'):
+            parts.append(f'{attrs["revue"]}')
+        if attrs.get('date'):
+            parts.append(f'{attrs["date"]}')
+        
+        text = '. '.join(parts)
+        
+        if attrs.get('doi'):
+            doi = attrs["doi"]
+            text += f' <a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>'
+        
+        return text
+

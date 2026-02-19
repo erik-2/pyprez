@@ -5,6 +5,7 @@ Parser Markdown pour les présentations
 from typing import Dict, List, Tuple
 from .models import Slide, Section, Presentation
 from .config import MARKERS, MD_PREFIXES, SLIDE_TYPES
+import re
 
 
 def parse_metadata(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
@@ -253,3 +254,26 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     
     # Paragraphe normal
     return {'type': 'paragraph', 'content': line}
+
+def parse_details_with_references(details: List[str]) -> Tuple[List[str], Dict[str, dict]]:
+    """
+    Sépare le contenu des définitions de références.
+    Retourne (lignes_contenu, {id: attrs_reference})
+    """
+    content_lines = []
+    references = {}
+    
+    for line in details:
+        # Définition de référence : [^id]: [@ref ...]
+        ref_def_match = re.match(r'^\[\^(\w+)\]:\s*\[@ref\s+(.+)\]$', line.strip())
+        if ref_def_match:
+            ref_id = ref_def_match.group(1)
+            ref_attrs_str = ref_def_match.group(2)
+            attrs = {}
+            for m in re.finditer(r'(\w+)="([^"]*)"', ref_attrs_str):
+                attrs[m.group(1)] = m.group(2)
+            references[ref_id] = attrs
+        else:
+            content_lines.append(line)
+    
+    return content_lines, references
