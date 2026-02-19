@@ -22,6 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description='Prévisualisation locale')
     parser.add_argument('--port', type=int, default=8000, help='Port du serveur (défaut: 8000)')
     parser.add_argument('-s', '--source', type=Path, default=Path('./cours'), help='Dossier source')
+    parser.add_argument('-n', '--no-browser', action='store_true',help="N'ouvre pas de nouvel onglet dans le navigateur")
     args = parser.parse_args()
     
     # Build dans un dossier temporaire
@@ -50,8 +51,8 @@ def main():
         url = f"http://localhost:{args.port}"
         print(f"\n🌐 Serveur démarré : {url}")
         print("   Ctrl+C pour arrêter\n")
-        
-        webbrowser.open(url)
+        if not args.no_browser:
+            webbrowser.open(url)
         
         try:
             httpd.serve_forever()
