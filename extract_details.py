@@ -14,7 +14,7 @@ import re
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Tuple
+from typing import Dict, Tuple
 
 from lib import parse_details_only, format_markdown
 
