@@ -176,7 +176,7 @@ body {
 .sub-section {
   margin-bottom: 2.5rem;
   padding-left: 1rem;
-  border-left: 3px solid var(--accent);
+  /* border-left: 3px solid var(--accent); */
 }
 
 .section-title.level-2 {

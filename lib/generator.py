@@ -485,11 +485,17 @@ class PageGenerator(BaseGenerator):
         super().__init__(base_path, theme)
         self.preview = preview
     
-    def _get_page_css(self) -> str:
+    def _get_page_css(self, file: str) -> str:
         """CSS spécifique aux pages statiques"""
+
+        css_path = self.base_path / f'css/{file}.css'
+        if css_path.exists():
+            css = css_path.read_text(encoding='utf-8')
+        else:
+            raise FileNotFoundError(f"css/{file}.css non trouvé")
         return f'''
         {self._get_base_css()}
-        
+        {css}
         .container {{
             max-width: 1200px;
             margin: 0 auto;
@@ -556,42 +562,8 @@ class PageGenerator(BaseGenerator):
     <title>{site_title}</title>
     <link rel="icon" href="{self.FAVICON}">
     <style>
-        {self._get_page_css()}
-        
-        .collections-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 3rem 0;
-        }}
-        
-        .collection-card {{
-            background: var(--bg-card);
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            text-align: center;
-            border-top: 4px solid var(--card-primary);
-        }}
-        
-        .collection-card:hover {{
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-hover);
-        }}
-        
-        .collection-icon {{ font-size: 4rem; margin-bottom: 1rem; }}
-        .collection-title {{ font-size: 1.5rem; font-weight: 600; color: var(--card-primary); margin-bottom: 0.5rem; }}
-        .collection-description {{ font-size: 0.95rem; color: var(--text-light); margin-bottom: 1rem; flex-grow: 1; }}
-        .collection-count {{ font-size: 0.9rem; font-weight: 500; color: var(--card-secondary); padding: 0.5rem 1rem; background: rgba(0,0,0,0.05); border-radius: 2rem; display: inline-block; }}
-        
-        @media (max-width: 768px) {{
-            .collections-grid {{ grid-template-columns: 1fr; }}
-        }}
-    </style>
+        {self._get_page_css("collection")}
+            </style>
 </head>
 <body>
     <header>
@@ -682,118 +654,14 @@ class PageGenerator(BaseGenerator):
     <title>{coll_info.get('title', coll_id)} - {site_title}</title>
     <link rel="icon" href="{self.FAVICON}">
     <style>
-        {self._get_page_css()}
-        .course-draft {{
-    opacity: 0.7;
-}}
-
-.course-draft .course-header {{
-    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-}}
-
-.draft-badge {{
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    font-size: 0.85rem;
-}}
-.btn-warning {{ background: #f59e0b; color: #000; }}
-.btn-warning:hover {{ filter: brightness(1.1); }}
-
-.course-draft-preview .course-header {{
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}}
-
-.btn-disabled {{
-    background: #e5e7eb;
-    color: #9ca3af;
-    cursor: not-allowed;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    font-size: 0.9rem;
-    flex: 1;
-    justify-content: center;
-}}
-        .container {{ max-width: 1000px; }}
-        
-        .back-link {{
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 0.95rem;
-            margin-bottom: 2rem;
-        }}
-        .back-link:hover {{ color: var(--text); }}
-        
+        {self._get_page_css("homepage")}
         header {{
             padding: 3rem 2rem;
             background: {self._get_header_gradient(theme)};
             border-radius: 1rem;
             margin-bottom: 2rem;
         }}
-        
-        header h1 {{ font-size: 2.5rem; }}
-        .collection-icon {{ font-size: 4rem; margin-bottom: 1rem; }}
-        header .description {{ font-size: 1.1rem; opacity: 0.9; margin-bottom: 0.5rem; }}
-        header .count {{ font-size: 0.95rem; opacity: 0.8; }}
-
-        .courses-list {{
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 1.5rem;
-        }}
-        
-        .course-card {{
-            background: var(--bg-card);
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }}
-        .course-card:hover {{ transform: translateY(-4px); box-shadow: var(--shadow-hover); }}
-        
-        .course-header {{
-            padding: 1.5rem;
-            background: linear-gradient(135deg, var(--card-primary) 0%, var(--card-secondary) 100%);
-            color: white;
-        }}
-        .course-title {{ font-size: 1.4rem; font-weight: 600; margin-bottom: 0.25rem; }}
-        .course-subtitle {{ font-size: 0.95rem; opacity: 0.9; font-weight: 300; }}
-        .course-meta {{ padding: 1rem 1.5rem; color: var(--text-light); font-size: 0.9rem; border-bottom: 1px solid var(--border); }}
-        .course-actions {{ padding: 1rem 1.5rem; display: flex; gap: 0.75rem; }}
-        
-        .btn {{
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.2rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            flex: 1;
-            justify-content: center;
-        }}
-        .btn-primary {{ background: var(--card-primary); color: white; }}
-        .btn-primary:hover {{ filter: brightness(1.1); }}
-        .btn-secondary {{ background: var(--bg); color: var(--text); border: 1px solid var(--border); }}
-        .btn-secondary:hover {{ background: var(--border); }}
-        
-        @media (max-width: 768px) {{
-            header {{ padding: 2rem 1rem; border-radius: 0; }}
-            header h1 {{ font-size: 2rem; }}
-            .course-actions {{ flex-direction: column; }}
-        }}
-    </style>
+            </style>
 </head>
 <body>
     <main class="container">
