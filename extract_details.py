@@ -240,7 +240,7 @@ def _generate_section_content(section) -> str:
             alt = detail.get('alt', '')
             url = detail.get('url', '')
             if not url.startswith(('http://', 'https://', '/')):
-                url = f'/images/{url}'
+                url = f'../../images/{url}'
             caption = f'<figcaption>{alt}</figcaption>' if alt else ''
             content_parts.append(f'''<figure class="detail-image">
                 <img src="{url}" alt="{alt}">
