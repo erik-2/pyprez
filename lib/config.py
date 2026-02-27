@@ -48,6 +48,12 @@ THEMES = {
         'accent': '#fc8181',
         'warning': '#d69e2e',
     },
+    'qroc': {
+        'primary': '#374151',    # Gris foncé
+        'secondary': '#4b5563',  # Gris
+        'accent': '#10b981',     # Vert (correct)
+        'warning': '#ef4444',    # Rouge (incorrect)
+    },
 }
 
 DEFAULT_THEME = 'ocean'
