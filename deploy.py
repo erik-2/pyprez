@@ -22,13 +22,10 @@ Configuration (deploy.toml):
 """
 
 import sys
-import os
 import argparse
 import tomllib
 import subprocess
-import shutil
 from pathlib import Path
-from datetime import datetime
 
 
 # Répertoire du script (pour trouver build.py)
