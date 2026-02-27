@@ -267,22 +267,38 @@ class HTMLGenerator(BaseGenerator):
         
         points_html = []
         for p in slide.content:
-            if isinstance(p, dict) and p.get('type') == 'blockquote':
-                text = format_markdown(p["text"])
-                points_html.append(f'                        <blockquote class="slide-blockquote">{text}</blockquote>')
-            elif isinstance(p, dict) and p.get('type') == 'h3':
-                text = format_markdown(p["text"])
-                points_html.append(f'                        <h3>{text}</h3>')
+            if isinstance(p, dict):
+                if p.get('type') == 'blockquote':
+                    text = format_markdown(p["text"])
+                    points_html.append(f'                        <blockquote class="slide-blockquote">{text}</blockquote>')
+                elif p.get('type') == 'h3':
+                    text = format_markdown(p["text"])
+                    points_html.append(f'                        <h3>{text}</h3>')
+                elif p.get('type') == 'table':
+                    points_html.append(f'                        {format_table_html(p, "slide-table")}')
             elif isinstance(p, str):
                 p = format_markdown(p)
                 points_html.append(f'                        <li>{p}</li>')
-        
-        has_list_items = any(not isinstance(p, dict) for p in slide.content)
-        if has_list_items:
-            points = f'<ul class="key-points">\n' + '\n'.join(points_html) + '\n                    </ul>'
-        else:
-            points = '\n'.join(points_html)
 
+        # Envelopper les <li> dans <ul>
+        final_html = []
+        in_list = False
+        for html in points_html:
+            if '<li>' in html:
+                if not in_list:
+                    final_html.append('                    <ul class="key-points">')
+                    in_list = True
+                final_html.append(html)
+            else:
+                if in_list:
+                    final_html.append('                    </ul>')
+                    in_list = False
+                final_html.append(html)
+        
+        if in_list:
+            final_html.append('                    </ul>')
+    
+        points = '\n'.join(final_html)
         if is_last:
             if max_view > 0:
                 nav_hint = '''
@@ -342,13 +358,16 @@ class HTMLGenerator(BaseGenerator):
             num = ref_order.index(ref_id) + 1
             return f'<sup class="ref-number">{num}</sup>'
         
-        # Traiter le contenu et remplacer les appels [^id]
         paragraphs_html = []
-        for line in content_lines:
-            # Remplacer [^id] par le numéro
-            line_with_refs = re.sub(r'\[\^(\w+)\]', replace_ref, line)
-            paragraphs_html.append(f'                        {format_detail_line(line_with_refs)}')
-        
+        for item in content_lines:
+            # Tableau
+            if isinstance(item, dict) and item.get('type') == 'table':
+                paragraphs_html.append(f'                        {format_table_html(item, "detail-table")}')
+            # Texte normal
+            elif isinstance(item, str):
+                line_with_refs = re.sub(r'\[\^(\w+)\]', replace_ref, item)
+                paragraphs_html.append(f'                        {format_detail_line(line_with_refs)}')
+      
         paragraphs = '\n'.join(paragraphs_html)
         
         # Générer la liste des références en bas
@@ -706,3 +725,31 @@ def format_reference_inline(attrs: dict) -> str:
         
         return text
 
+def format_table_html(table: dict, css_class: str = 'detail-table') -> str:
+    """Génère le HTML d'un tableau"""
+    headers = table.get('headers', [])
+    alignments = table.get('alignments', [])
+    rows = table.get('rows', [])
+    
+    # En-têtes
+    thead_cells = []
+    for i, header in enumerate(headers):
+        align = alignments[i] if i < len(alignments) else 'left'
+        style = f' style="text-align: {align};"' if align != 'left' else ''
+        thead_cells.append(f'<th{style}>{format_markdown(header)}</th>')
+    
+    thead = f'<thead><tr>{"".join(thead_cells)}</tr></thead>'
+    
+    # Lignes
+    tbody_rows = []
+    for row in rows:
+        cells = []
+        for i, cell in enumerate(row):
+            align = alignments[i] if i < len(alignments) else 'left'
+            style = f' style="text-align: {align};"' if align != 'left' else ''
+            cells.append(f'<td{style}>{format_markdown(cell)}</td>')
+        tbody_rows.append(f'<tr>{"".join(cells)}</tr>')
+    
+    tbody = f'<tbody>{"".join(tbody_rows)}</tbody>'
+    
+    return f'<table class="{css_class}">{thead}{tbody}</table>'

@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, Tuple
 
-from lib import parse_details_only, format_markdown
+from lib import parse_details_only, format_markdown, format_table_html
 
 
 def parse_references_from_details(details: list) -> Tuple[list, Dict[str, dict]]:
@@ -217,6 +217,16 @@ def _generate_section_content(section) -> str:
     current_list = False
     
     for detail in content_details:
+         # Fermer la liste si on change de type
+        if current_list and (not isinstance(detail, dict) or detail.get('type') != 'list_item'):
+            content_parts.append('</ul>')
+            current_list = False
+        
+        # Tableau
+        if isinstance(detail, dict) and detail.get('type') == 'table':
+            content_parts.append(format_table_html(detail, 'detail-table'))
+            continue
+
         if detail['type'] == 'subtitle':
             if current_list:
                 content_parts.append('</ul>')

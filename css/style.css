@@ -120,7 +120,7 @@ h2 {
 }
 
 .content {
-  max-width: 75vw;
+  max-width: 1000px;
   margin: 0 auto;
   width: 100%;
 }
@@ -460,4 +460,93 @@ h2 {
 
 .references-list li {
   margin-bottom: 0.5rem;
+}
+
+/* Tableaux */
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.detail-table th,
+.detail-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+}
+
+.detail-table th {
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  text-align: left;
+}
+
+.detail-table tr:nth-child(even) {
+  background: var(--bg-section);
+}
+
+.detail-table tr:hover {
+  background: rgba(10, 77, 104, 0.08);
+}
+
+@media print {
+  .detail-table {
+    font-size: 10pt;
+  }
+
+  .detail-table th {
+    background: var(--bg-section) !important;
+    color: var(--text) !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* Tableaux dans les slides */
+.slide-table {
+  width: auto;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.slide-table th,
+.slide-table td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slide-table th {
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+}
+
+.slide-table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Tableaux dans les co-slides détails */
+.slide-detail .detail-table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.85em;
+  width: auto;
+}
+
+.slide-detail .detail-table th,
+.slide-detail .detail-table td {
+  padding: 0.4rem 0.6rem;
+  border: none;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.15);
+  text-align: left;
+}
+
+.slide-detail .detail-table th {
+  font-weight: 600;
+  border-bottom: 2px solid rgba(5, 5, 5, 0.25);
+}
+
+.slide-detail .detail-table tr:last-child td {
+  border-bottom: 1px solid rgba(5, 5, 5, 0.25);
 }

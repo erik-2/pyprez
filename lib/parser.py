@@ -1,7 +1,6 @@
 """
 Parser Markdown pour les présentations
 """
-
 from typing import Dict, List, Tuple
 from .models import Slide, Section, Presentation
 from .config import MARKERS, MD_PREFIXES, SLIDE_TYPES
@@ -23,6 +22,65 @@ def parse_metadata(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
         i += 1  # Passer le --- final
     
     return metadata, i
+
+
+def is_table_start(lines: List[str], idx: int) -> bool:
+    """Vérifie si l'index pointe vers le début d'un tableau valide"""
+    if idx + 1 >= len(lines):
+        return False
+    
+    first_line = lines[idx].strip()
+    separator = lines[idx + 1].strip()
+    
+    # Ligne avec des |
+    if not (first_line.startswith('|') and first_line.endswith('|') and first_line.count('|') >= 2):
+        return False
+    
+    # Ligne de séparation avec des -
+    if not (separator.startswith('|') and separator.endswith('|') and '-' in separator):
+        return False
+    
+    return True
+
+
+def parse_table(lines: List[str], start_idx: int) -> Tuple[dict, int]:
+    """
+    Parse un tableau Markdown.
+    Appelé uniquement si is_table_start() est True.
+    """
+    # En-têtes
+    headers = [cell.strip() for cell in lines[start_idx].strip().strip('|').split('|')]
+    
+    # Alignement
+    alignments = []
+    for cell in lines[start_idx + 1].strip().strip('|').split('|'):
+        cell = cell.strip()
+        if cell.startswith(':') and cell.endswith(':'):
+            alignments.append('center')
+        elif cell.endswith(':'):
+            alignments.append('right')
+        else:
+            alignments.append('left')
+    
+    # Lignes de données
+    rows = []
+    idx = start_idx + 2
+    
+    while idx < len(lines):
+        line = lines[idx].strip()
+        if not (line.startswith('|') and line.endswith('|')):
+            break
+        
+        cells = [cell.strip() for cell in line.strip('|').split('|')]
+        rows.append(cells)
+        idx += 1
+    
+    return {
+        'type': 'table',
+        'headers': headers,
+        'alignments': alignments,
+        'rows': rows,
+    }, idx
 
 
 def parse_presentation(md_content: str) -> Presentation:
@@ -115,6 +173,21 @@ def parse_presentation(md_content: str) -> Presentation:
             if current_slide:
                 current_slide.content.append({'type': 'blockquote', 'text': line[2:].strip()})
         
+        # Tableau dans main
+        elif current_section == 'main' and is_table_start(lines, i):
+            table, i = parse_table(lines, i)
+            if current_slide:
+                current_slide.content.append(table)
+            just_after_title = False
+            continue  # parse_table a déjà avancé i
+        
+        # Tableau dans details
+        elif current_section == 'details' and is_table_start(lines, i):
+            table, i = parse_table(lines, i)
+            if current_slide :
+                current_slide.details.append(table)
+            continue  # parse_table a déjà avancé i
+        
         # H3 dans main
         elif line.startswith(MD_PREFIXES['h3']) and current_section == 'main':
             if current_slide:
@@ -150,6 +223,7 @@ def parse_presentation(md_content: str) -> Presentation:
         slides.append(current_slide)
     
     return Presentation(metadata=metadata, slides=slides)
+
 
 def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
     """Parse le Markdown et extrait les sections avec hiérarchie"""
@@ -197,7 +271,16 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
         elif line == MARKERS['questions'] or line == MARKERS['no_annexes']:
             in_details = False
         
-        # Contenu des détails
+        # Tableau dans les détails
+        elif in_details and is_table_start(lines, i):
+            table, i = parse_table(lines, i)
+            if current_section:
+                current_section.details.append(table)
+            elif current_main_section:
+                current_main_section.details.append(table)
+            continue  # parse_table a déjà avancé i
+        
+        # Contenu des détails (autres)
         elif in_details and line and not line.startswith('#'):
             if current_section:
                 detail = _parse_detail_line(line)
@@ -217,8 +300,7 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
 
 def _parse_detail_line(line: str) -> Dict[str, str]:
     """Parse une ligne de détail et retourne son type et contenu"""
-    import re
-   
+    
     # Image Markdown: ![légende](url)
     img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)$', line)
     if img_match:
@@ -239,11 +321,11 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     # Point de liste
     if line.startswith('- ') or line.startswith('* '):
         return {'type': 'list_item', 'content': line[2:]}
-
+    
     # Blockquote: > texte
     if line.startswith('> '):
         return {'type': 'blockquote', 'content': line[2:]}
-
+    
     # Référence: [@ref auteurs="..." titre="..." ...]
     ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
     if ref_match:
@@ -255,6 +337,7 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     # Paragraphe normal
     return {'type': 'paragraph', 'content': line}
 
+
 def parse_details_with_references(details: List[str]) -> Tuple[List[str], Dict[str, dict]]:
     """
     Sépare le contenu des définitions de références.
@@ -264,6 +347,11 @@ def parse_details_with_references(details: List[str]) -> Tuple[List[str], Dict[s
     references = {}
     
     for line in details:
+        # Si c'est un dict (tableau, etc.), le garder tel quel
+        if isinstance(line, dict):
+            content_lines.append(line)
+            continue
+        
         # Définition de référence : [^id]: [@ref ...]
         ref_def_match = re.match(r'^\[\^(\w+)\]:\s*\[@ref\s+(.+)\]$', line.strip())
         if ref_def_match:
