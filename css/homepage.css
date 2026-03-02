@@ -180,3 +180,47 @@ header .count {
     flex-direction: column;
   }
 }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.footer-content .copyleft {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+.footer-content .separator {
+  opacity: 0.5;
+}
+
+.footer-content .contact {
+  color: var(--text-light);
+}
+
+.footer-content .contact b {
+  display: none;
+}
+
+.footer-content .license {
+  color: var(--text-light);
+  text-decoration: none;
+}
+
+.footer-content .license:hover {
+  color: var(--primary);
+}

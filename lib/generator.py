@@ -598,6 +598,13 @@ class PageGenerator(BaseGenerator):
     
     <footer>
         <p>Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}</p>
+        <div class="footer-content">
+                    <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" class="license">
+                <span class="copyleft">©</span> CC BY-SA 4.0
+            </a>
+            <span class="separator">•</span>
+            <span class="contact">eric.tellier@<b>newick.</b>newick.fr</span>
+        </div>
     </footer>
 </body>
 </html>'''
@@ -700,6 +707,13 @@ class PageGenerator(BaseGenerator):
     
     <footer>
         <p>Généré le {datetime.now().strftime('%d/%m/%Y à %H:%M')}</p>
+            <div class="footer-content">
+                        <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" class="license">
+                <span class="copyleft">©</span> CC BY-SA 4.0
+            </a>
+            <span class="separator">•</span>
+            <span class="contact">eric.tellier@<b>newick.</b>newick.fr</span>
+        </div>
     </footer>
 </body>
 </html>'''
