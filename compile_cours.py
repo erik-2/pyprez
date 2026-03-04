@@ -21,7 +21,6 @@ from lib import parse_presentation, HTMLGenerator, THEMES, DEFAULT_THEME
 def compile_course(
     md_file: Path,
     output_file: Path | None = None,
-    js_uri: str | None = None,
     theme: str | None = None
 ) -> Path:
     """Compile un fichier Markdown en présentation HTML"""
@@ -48,16 +47,8 @@ def compile_course(
     final_theme = theme or presentation.metadata.get('theme') or DEFAULT_THEME
     print(f"🎨 Thème : {final_theme}")
 
-    # Charger le CSS depuis le dossier du projet
-    project_root = Path(__file__).parent
-    css_file = project_root / 'css' / 'style.css'
-    if css_file.exists():
-        css = css_file.read_text(encoding='utf-8')
-    else:
-        raise FileNotFoundError(f"Fichier CSS introuvable: {css_file}")
-
     generator = HTMLGenerator(base_path=md_file.parent, theme=final_theme)
-    html = generator.generate(presentation, js_uri=js_uri, css_style=css)
+    html = generator.generate(presentation, is_draft=False)
 
     
     if output_file is None:
@@ -98,16 +89,14 @@ Exemples:
     parser.add_argument('input', type=Path, help='Fichier Markdown d\'entrée')
     parser.add_argument('-o', '--output', type=Path, help='Fichier HTML de sortie')
     parser.add_argument('--theme', type=str, choices=THEMES.keys(), help='Thème de couleurs')
-    parser.add_argument('--js-uri', type=str, help='URI externe pour le script JS')
-    
     args = parser.parse_args()
-    
+
     if not args.input.exists():
         print(f"❌ Erreur : fichier {args.input} introuvable")
         sys.exit(1)
-    
+
     try:
-        output = compile_course(args.input, args.output, args.js_uri, args.theme)
+        output = compile_course(args.input, args.output, args.theme)
         print(f"\n🎉 Succès ! Ouvrez {output} dans votre navigateur")
     except Exception as e:
         print(f"❌ Erreur lors de la compilation : {e}")
