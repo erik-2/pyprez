@@ -618,7 +618,7 @@ class PageGenerator(BaseGenerator):
         cards_html = []
         for course in courses_sorted:
             colors = self._get_theme_colors(course.get('theme'))
-            status = course.get('status', 'puplished')
+            status = course.get('status', 'published')
             
             subtitle = f'<p class="course-subtitle">{course["subtitle"]}</p>' if course.get('subtitle') else ''
             meta_parts = []
