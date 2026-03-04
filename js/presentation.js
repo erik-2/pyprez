@@ -224,7 +224,16 @@ const PresentationNav = (function() {
                 updatePosition();
             }
         } else if (Math.abs(dY) > minSwipeDistance) {
-            // Swipe vertical
+            // Swipe vertical : bloquer la navigation si le contenu n'est pas en bout de défilement
+            if (currentView > 0) {
+                const active = getActiveElement();
+                if (active) {
+                    const atTop = touchStartScrollTop <= 1;
+                    const atBottom = Math.abs(active.scrollHeight - touchStartScrollTop - active.clientHeight) <= 2;
+                    if (dY > 0 && !atTop) return;
+                    if (dY < 0 && !atBottom) return;
+                }
+            }
             if (dY > 0 && currentSlide > 0) {
                 currentSlide--;
                 currentView = 0;
