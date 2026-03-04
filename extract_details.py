@@ -269,11 +269,21 @@ def _generate_section_content(section) -> str:
             if current_list:
                 content_parts.append('</ul>')
                 current_list = False
-            paras = ''.join(
-                f'<p>{format_markdown(l)}</p>'
-                for l in detail['content'].split('\n') if l.strip()
-            )
-            content_parts.append(f'<div class="perspective-block"><div class="perspective-label">Perspective</div>{paras}</div>')
+            paras = []
+            for l in detail['content'].split('\n'):
+                if not l.strip():
+                    continue
+                ref_match = re.match(r'^\[@ref\s+(.+)\]$', l.strip())
+                if ref_match:
+                    attrs = {}
+                    for m in re.finditer(r'(\w+)="([^"]*)"', ref_match.group(1)):
+                        attrs[m.group(1)] = m.group(2)
+                    paras.append(format_reference_html(attrs))
+                else:
+                    content = format_markdown(l)
+                    content = replace_ref_in_text(content)
+                    paras.append(f'<p>{content}</p>')
+            content_parts.append(f'<div class="perspective-block"><div class="perspective-label">Perspective</div>{"".join(paras)}</div>')
 
         elif detail['type'] == 'reference':
             # Référence inline ancienne syntaxe ([@ref ...]) - garder compatibilité

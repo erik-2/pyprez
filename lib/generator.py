@@ -365,13 +365,15 @@ class HTMLGenerator(BaseGenerator):
                 paragraphs_html.append(f'                        {format_table_html(item, "detail-table")}')
             # Bloc perspective
             elif isinstance(item, dict) and item.get('type') == 'perspective':
-                paras = ''.join(
-                    f'<p>{format_markdown(l)}</p>'
-                    for l in item['content'].split('\n') if l.strip()
-                )
+                lines_html = []
+                for l in item['content'].split('\n'):
+                    if not l.strip():
+                        continue
+                    line_with_refs = re.sub(r'\[\^(\w+)\]', replace_ref, l)
+                    lines_html.append(format_detail_line(line_with_refs))
                 paragraphs_html.append(f'''                        <div class="perspective-block">
                             <div class="perspective-label">Perspective</div>
-                            {paras}
+                            {''.join(lines_html)}
                         </div>''')
             # Texte normal
             elif isinstance(item, str):
