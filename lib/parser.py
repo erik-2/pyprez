@@ -225,6 +225,23 @@ def parse_presentation(md_content: str) -> Presentation:
     return Presentation(metadata=metadata, slides=slides)
 
 
+MAX_SLIDE_ITEMS = 6
+
+
+def lint_presentation(presentation: Presentation) -> List[str]:
+    """Vérifie le contenu des slides et retourne des avertissements"""
+    warnings = []
+    for slide in presentation.slides:
+        if slide.slide_type not in ('content', 'image'):
+            continue
+        count = len(slide.content)
+        if count > MAX_SLIDE_ITEMS:
+            warnings.append(
+                f"Slide {slide.number} '{slide.title}': {count} éléments (max {MAX_SLIDE_ITEMS})"
+            )
+    return warnings
+
+
 def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
     """Parse le Markdown et extrait les sections avec hiérarchie"""
     lines = md_content.split('\n')

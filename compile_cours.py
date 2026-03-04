@@ -15,7 +15,7 @@ import sys
 import argparse
 from pathlib import Path
 
-from lib import parse_presentation, HTMLGenerator, THEMES, DEFAULT_THEME
+from lib import parse_presentation, HTMLGenerator, THEMES, DEFAULT_THEME, lint_presentation
 
 
 def compile_course(
@@ -32,6 +32,9 @@ def compile_course(
     presentation = parse_presentation(md_content)
     
     print(f"📊 {presentation.total_slides} slides détectées")
+
+    for warning in lint_presentation(presentation):
+        print(f"  ⚠️  {warning}")
     
     # Statistiques par type
     stats = {

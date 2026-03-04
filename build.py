@@ -16,7 +16,7 @@ import tomllib
 from pathlib import Path
 from typing import List, Dict
 
-from lib import parse_presentation, HTMLGenerator, PageGenerator, DEFAULT_THEME
+from lib import parse_presentation, HTMLGenerator, PageGenerator, DEFAULT_THEME, lint_presentation
 
 
 # Répertoire du script (pour trouver les assets CSS/JS)
@@ -47,7 +47,10 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str, preview: b
     
     content = md_file.read_text(encoding='utf-8')
     presentation = parse_presentation(content)
-    
+
+    for warning in lint_presentation(presentation):
+        print(f"      ⚠️  {warning}")
+
     theme = presentation.metadata.get('theme', DEFAULT_THEME)
     collections = parse_collections_field(presentation.metadata.get('collections'))
     status = presentation.metadata.get('status', 'published')
