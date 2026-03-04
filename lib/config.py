@@ -60,11 +60,8 @@ DEFAULT_THEME = 'ocean'
 
 # CSS et JS par défaut (chemins relatifs au script principal)
 ASSETS = {
-    'collection_css': 'css/collection.css',
-    'index_css': 'css/index.css',
     'css': 'css/style.css',
     'js': 'js/presentation.js',
-    'fonts': "fonts",
 }
 
 
