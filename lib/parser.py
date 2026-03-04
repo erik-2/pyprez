@@ -158,6 +158,25 @@ def parse_presentation(md_content: str) -> Presentation:
         elif line == MARKERS['no_annexes']:
             if current_slide:
                 current_slide.has_annexes = False
+
+        # Bloc perspective (multi-ligne) dans details
+        elif line == MARKERS['perspective'] and current_section == 'details':
+            i += 1
+            perspective_lines = []
+            while i < len(lines):
+                inner = lines[i].strip()
+                if inner in (MARKERS['end_block'], MARKERS['questions'], MARKERS['no_annexes']):
+                    break
+                if inner.startswith(MD_PREFIXES['h1']) or inner.startswith(MD_PREFIXES['h2']):
+                    break
+                perspective_lines.append(lines[i])
+                i += 1
+            if i < len(lines) and lines[i].strip() == MARKERS['end_block']:
+                i += 1
+            content = '\n'.join(perspective_lines).strip()
+            if current_slide and content:
+                current_slide.details.append({'type': 'perspective', 'content': content})
+            continue
         
         # Sous-titre (> ) seulement juste après le titre
         elif line.startswith('> ') and current_section == 'main' and just_after_title:
@@ -287,7 +306,27 @@ def parse_details_only(md_content: str) -> Tuple[Dict[str, str], List[Section]]:
         # Sortie de la section détails
         elif line == MARKERS['questions'] or line == MARKERS['no_annexes']:
             in_details = False
-        
+
+        # Bloc perspective (multi-ligne) dans details
+        elif line == MARKERS['perspective'] and in_details:
+            i += 1
+            perspective_lines = []
+            while i < len(lines):
+                inner = lines[i].strip()
+                if inner in (MARKERS['end_block'], MARKERS['questions'], MARKERS['no_annexes']):
+                    break
+                if inner.startswith(MD_PREFIXES['h1']) or inner.startswith(MD_PREFIXES['h2']):
+                    break
+                perspective_lines.append(lines[i])
+                i += 1
+            if i < len(lines) and lines[i].strip() == MARKERS['end_block']:
+                i += 1
+            content = '\n'.join(perspective_lines).strip()
+            target = current_section or current_main_section
+            if target and content:
+                target.details.append({'type': 'perspective', 'content': content})
+            continue
+
         # Tableau dans les détails
         elif in_details and is_table_start(lines, i):
             table, i = parse_table(lines, i)

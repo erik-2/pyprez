@@ -265,6 +265,16 @@ def _generate_section_content(section) -> str:
             content = replace_ref_in_text(content)
             content_parts.append(f'<blockquote class="detail-blockquote">{content}</blockquote>')
         
+        elif detail['type'] == 'perspective':
+            if current_list:
+                content_parts.append('</ul>')
+                current_list = False
+            paras = ''.join(
+                f'<p>{format_markdown(l)}</p>'
+                for l in detail['content'].split('\n') if l.strip()
+            )
+            content_parts.append(f'<div class="perspective-block"><div class="perspective-label">Perspective</div>{paras}</div>')
+
         elif detail['type'] == 'reference':
             # Référence inline ancienne syntaxe ([@ref ...]) - garder compatibilité
             if current_list:

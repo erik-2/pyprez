@@ -363,6 +363,16 @@ class HTMLGenerator(BaseGenerator):
             # Tableau
             if isinstance(item, dict) and item.get('type') == 'table':
                 paragraphs_html.append(f'                        {format_table_html(item, "detail-table")}')
+            # Bloc perspective
+            elif isinstance(item, dict) and item.get('type') == 'perspective':
+                paras = ''.join(
+                    f'<p>{format_markdown(l)}</p>'
+                    for l in item['content'].split('\n') if l.strip()
+                )
+                paragraphs_html.append(f'''                        <div class="perspective-block">
+                            <div class="perspective-label">Perspective</div>
+                            {paras}
+                        </div>''')
             # Texte normal
             elif isinstance(item, str):
                 line_with_refs = re.sub(r'\[\^(\w+)\]', replace_ref, item)

@@ -247,6 +247,45 @@ body {
   font-style: italic;
 }
 
+/* Bloc perspective */
+.perspective-block {
+  margin: 2rem 0;
+  padding: 1.25rem 1.75rem;
+  background: #fdf7ee;
+  border: 1px solid #d4a96a;
+  border-left: 4px solid #b07d3a;
+  border-radius: 4px;
+}
+
+.perspective-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #8b5e2c;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.perspective-block p {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  line-height: 1.8;
+  color: #3a2a1a;
+  margin-bottom: 0.5rem;
+}
+
+.perspective-block p:last-child {
+  margin-bottom: 0;
+}
+
+@media print {
+  .perspective-block {
+    background: #fdf7ee !important;
+    border-left-color: #b07d3a !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
 /* Formatage inline */
 strong {
   color: var(--primary);

@@ -7,6 +7,8 @@ MARKERS = {
     'details': ':::details',
     'questions': ':::questions',
     'no_annexes': ':::no-annexes',
+    'perspective': ':::perspective',
+    'end_block': ':::',
 }
 
 # Types de slides

@@ -327,6 +327,38 @@ h2 {
   background: rgba(0, 0, 0, 0.1);
 }
 
+/* Bloc perspective */
+.perspective-block {
+  margin: 2rem 0;
+  padding: 1.25rem 1.75rem;
+  background: rgba(180, 120, 40, 0.08);
+  border-left: 4px solid #b07d3a;
+  border-radius: 0 8px 8px 0;
+}
+
+.perspective-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #b07d3a;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.perspective-block p {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 1em;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.perspective-block p:last-child {
+  margin-bottom: 0;
+}
+
 /* Références bibliographiques */
 .reference {
   font-size: 0.95rem;
