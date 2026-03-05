@@ -334,7 +334,11 @@ def build(
     collections_for_index = {}
     for coll_id, config in collections_config.items():
         if coll_id in collections_data and collections_data[coll_id]:
-            html = page_gen.generate_collection_page(coll_id, config, collections_data[coll_id], site_title)
+            qr_image = source_dir / 'images' / f'qr_collection_{coll_id}.png'
+            has_qr = qr_image.exists()
+            if not has_qr:
+                print(f"  ⚠️  QR code manquant pour '{coll_id}' (attendu : images/qr_collection_{coll_id}.png)")
+            html = page_gen.generate_collection_page(coll_id, config, collections_data[coll_id], site_title, has_qr=has_qr)
             (collections_pages_dir / f'{coll_id}.html').write_text(html, encoding='utf-8')
             collections_for_index[coll_id] = config
             print(f"  📄 {coll_id}.html ({len(collections_data[coll_id])} cours)")

@@ -621,7 +621,7 @@ class PageGenerator(BaseGenerator):
 </body>
 </html>'''
     
-    def generate_collection_page(self, coll_id: str, coll_info: Dict, courses: List, site_title: str) -> str:
+    def generate_collection_page(self, coll_id: str, coll_info: Dict, courses: List, site_title: str, has_qr: bool = False) -> str:
         """Génère la page d'une collection"""
         
         theme = coll_info.get('theme', DEFAULT_THEME)
@@ -726,6 +726,7 @@ class PageGenerator(BaseGenerator):
             <span class="separator">•</span>
             <span class="contact">eric.tellier@<b>newick.</b>newick.fr</span>
         </div>
+            {f'<div class="footer-qr"><a href="../images/qr_collection_{coll_id}.png" target="_blank" title="QR code de partage"><img src="../images/qr_collection_{coll_id}.png" alt="QR Code" class="qr-code"></a></div>' if has_qr else ''}
     </footer>
 </body>
 </html>'''
