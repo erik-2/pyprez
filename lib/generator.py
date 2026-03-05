@@ -573,14 +573,22 @@ class PageGenerator(BaseGenerator):
                 continue
             
             colors = self._get_theme_colors(coll_info.get('theme'))
-            course_count = len(collections_data[coll_id])
-            
+            coll_courses = collections_data[coll_id]
+            qroc_count = sum(1 for c in coll_courses if c.get('theme') == 'qroc')
+            regular_count = len(coll_courses) - qroc_count
+            count_parts = []
+            if regular_count:
+                count_parts.append(f'{regular_count} cours')
+            if qroc_count:
+                count_parts.append(f'{qroc_count} QROC')
+            count_label = ' · '.join(count_parts)
+
             cards_html.append(f'''
             <a href="collections/{coll_id}.html" class="collection-card" style="--card-primary: {colors['primary']}; --card-secondary: {colors['secondary']};">
                 <div class="collection-icon">{coll_info.get('icon', '📚')}</div>
                 <h2 class="collection-title">{coll_info.get('title', coll_id)}</h2>
                 <p class="collection-description">{coll_info.get('description', '')}</p>
-                <div class="collection-count">{course_count} cours</div>
+                <div class="collection-count">{count_label}</div>
             </a>''')
         
         total_collections = len([c for c in collections_config if c in collections_data and collections_data[c]])
@@ -626,7 +634,16 @@ class PageGenerator(BaseGenerator):
         
         theme = coll_info.get('theme', DEFAULT_THEME)
         courses_sorted = sorted(courses, key=lambda c: c.get('date', ''), reverse=True)
-        
+
+        qroc_count = sum(1 for c in courses if c.get('theme') == 'qroc')
+        regular_count = len(courses) - qroc_count
+        count_parts = []
+        if regular_count:
+            count_parts.append(f'{regular_count} cours')
+        if qroc_count:
+            count_parts.append(f'{qroc_count} QROC')
+        count_label = ' · '.join(count_parts)
+
         cards_html = []
         for course in courses_sorted:
             colors = self._get_theme_colors(course.get('theme'))
@@ -709,7 +726,7 @@ class PageGenerator(BaseGenerator):
             <div class="collection-icon">{coll_info.get('icon', '📚')}</div>
             <h1>{coll_info.get('title', coll_id)}</h1>
             <p class="description">{coll_info.get('description', '')}</p>
-            <p class="count">{len(courses)} cours</p>
+            <p class="count">{count_label}</p>
         </header>
         
         <div class="courses-list">
