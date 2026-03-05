@@ -41,10 +41,10 @@ def parse_collections_field(value) -> List[str]:
     return [c.strip() for c in value.split(',') if c.strip()]
 
 
-def compile_course(md_file: Path, output_dir: Path, folder_name: str, preview: bool) -> Dict:
-    """Compile un cours et retourne ses métadonnées"""
+def compile_course(md_file: Path, output_dir: Path, folder_name: str, preview: bool) -> Dict | None:
+    """Compile un cours et retourne ses métadonnées, ou None si le cours est ignoré"""
     print(f"    📄 {md_file.name}...")
-    
+
     content = md_file.read_text(encoding='utf-8')
     presentation = parse_presentation(content)
 
@@ -54,7 +54,12 @@ def compile_course(md_file: Path, output_dir: Path, folder_name: str, preview: b
     theme = presentation.metadata.get('theme', DEFAULT_THEME)
     collections = parse_collections_field(presentation.metadata.get('collections'))
     status = presentation.metadata.get('status', 'published')
-    
+
+    # Cours obsolète : ignoré complètement (ni placeholder, ni entrée dans les index)
+    if status in ('old', 'obsolete'):
+        print(f"      🗄️  Obsolète (ignoré)")
+        return None
+
     # Créer le dossier du cours
     course_dir = output_dir / folder_name / md_file.stem
     course_dir.mkdir(parents=True, exist_ok=True)
@@ -298,7 +303,8 @@ def build(
         for md_file in sorted(md_files):
             try:
                 metadata = compile_course(md_file, output_dir, folder_name, preview)
-                all_courses.append(metadata)
+                if metadata is not None:
+                    all_courses.append(metadata)
             except Exception as e:
                 print(f"    ❌ Erreur sur {md_file.name}: {e}")
                 import traceback
