@@ -107,6 +107,7 @@ header .count {
   padding: 1.5rem;
   background: linear-gradient(135deg, var(--card-primary) 0%, var(--card-secondary) 100%);
   color: white;
+  flex: 1;
 }
 
 .course-title {
