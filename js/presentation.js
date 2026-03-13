@@ -246,6 +246,17 @@ const PresentationNav = (function() {
         }
     }
 
+    // Masquage automatique du curseur après inactivité
+    let cursorTimer = null;
+    function hideCursor() {
+        document.body.style.cursor = 'none';
+    }
+    function showCursor() {
+        document.body.style.cursor = '';
+        clearTimeout(cursorTimer);
+        cursorTimer = setTimeout(hideCursor, 2000);
+    }
+
     function init(total) {
         if (!total || total < 1) {
             console.error('❌ totalSlides invalide');
@@ -258,6 +269,8 @@ const PresentationNav = (function() {
         document.addEventListener('keydown', handleKeyboard);
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchend', handleTouchEnd, false);
+        document.addEventListener('mousemove', showCursor);
+        cursorTimer = setTimeout(hideCursor, 2000);
 
         currentSlide = 0;
         currentView = 0;
@@ -280,6 +293,8 @@ const PresentationNav = (function() {
         document.removeEventListener('keydown', handleKeyboard);
         document.removeEventListener('touchstart', handleTouchStart);
         document.removeEventListener('touchend', handleTouchEnd);
+        document.removeEventListener('mousemove', showCursor);
+        clearTimeout(cursorTimer);
     }
 
     function updateHash() {

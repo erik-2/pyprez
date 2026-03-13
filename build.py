@@ -207,6 +207,8 @@ def copy_images(output_dir: Path, source_dir: Path) -> int:
             shutil.copy(img, img_dst / img.name)
             copied.add(img.name)
             total_images += 1
+        else:
+            print(f"  [WARNING] Image ignorée (nom en double) : {img}")
     
     # Images dans source/images/
     images_src = source_dir / 'images'

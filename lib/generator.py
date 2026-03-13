@@ -432,7 +432,7 @@ class HTMLGenerator(BaseGenerator):
         items = '\n'.join(
             f'''                        <li class="question-item">
                             <span class="question-number">{i}</span>
-                            {q}
+                            {format_markdown(q)}
                         </li>'''
             for i, q in enumerate(slide.questions, 1)
         )
