@@ -51,6 +51,7 @@ Le fichier commence par un bloc YAML entre `---` :
 | `collections` | Collections (séparées par virgules) | Non |
 | `university` | Institution | Non |
 | `department` | Département/Service | Non |
+| `status` | `draft` pour masquer le cours en production | Non |
 
 ### Thèmes disponibles
 
@@ -59,6 +60,7 @@ Le fichier commence par un bloc YAML entre `---` :
 | `ocean` | Bleu-vert turquoise | Noyade, milieu aquatique (défaut) |
 | `glacier` | Bleu froid | Hypothermie, froid |
 | `bordeaux` | Rouge sombre | Pendaison, strangulation, trauma |
+| `qroc` | Gris foncé / vert+rouge | Slides de révision Q&A |
 
 ### Collections
 
@@ -128,6 +130,9 @@ Description détaillée...
 
 - Que représente ce schéma ?
 ```
+
+- La ligne `> ...` juste après `## Image:` devient la légende affichée sous l'image.
+- La ligne `Caption: ...` est le texte alternatif (`alt`) de l'image pour l'accessibilité.
 
 ## Éléments de contenu
 
@@ -203,7 +208,7 @@ Texte explicatif sur une ou plusieurs lignes.
 ![Légende](nom_image.png)
 ```
 
-**Références bibliographiques :**
+**Références bibliographiques (inline) :**
 ```markdown
 [@ref auteurs="Nom A, Nom B" titre="Titre article" revue="Nom Journal" date="2024" doi="10.1234/exemple"]
 ```
@@ -214,6 +219,35 @@ Champs disponibles pour les références :
 - `revue` — Nom du journal
 - `date` — Année de publication
 - `doi` — Identifiant DOI (génère un lien cliquable)
+
+**Références numérotées (style note de bas de page) :**
+
+Pour numéroter les références automatiquement dans le texte, déclarer la référence avec `[^id]:` et la citer avec `[^id]` :
+
+```markdown
+:::details
+
+La survie dépend de la précocité de la RCP[^1] et de la défibrillation[^2].
+
+[^1]: [@ref auteurs="Perkins GD" titre="European Resuscitation Council Guidelines 2021" revue="Resuscitation" date="2021" doi="10.1016/j.resuscitation.2021.02.009"]
+[^2]: [@ref auteurs="Zipes DP" titre="Sudden cardiac death" revue="Circulation" date="2006"]
+```
+
+Les citations `[^id]` sont remplacées par des exposants numérotés (`¹`, `²`…) et les références correspondantes apparaissent en bas de la slide de détails.
+
+**Bloc perspective :**
+```markdown
+:::details
+
+Texte introductif.
+
+:::perspective
+Ce point illustre une évolution récente de la pratique clinique.
+Il peut s'étendre sur plusieurs lignes.
+:::
+```
+
+Le contenu du bloc `:::perspective` est affiché dans un encadré visuellement distinct, signalant une mise en perspective ou une note de pratique.
 
 ## Section questions (`:::questions`)
 ```markdown

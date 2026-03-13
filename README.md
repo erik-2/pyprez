@@ -13,11 +13,11 @@ cd cours
 
 ## Structure du projet
 ```
-cours/
+pyprez/                       # Racine du projet
 ├── build.py                  # Script de build principal
 ├── compile_cours.py          # Compilation d'un seul cours
 ├── extract_details.py        # Extraction du document imprimable
-├── collections.toml          # Définition des collections
+├── preview.py                # Serveur de dev avec hot reload
 ├── lib/                      # Bibliothèque Python
 │   ├── __init__.py
 │   ├── config.py             # Configuration (thèmes, assets)
@@ -29,14 +29,22 @@ cours/
 ├── js/
 │   └── presentation.js       # Navigation interactive
 ├── fonts/                    # Polices locales (Crimson Pro, Work Sans)
-├── images/                   # Images partagées
-└── <dossiers>/               # Dossiers de cours
-    ├── cours1.md
-    ├── cours2.md
-    └── images/               # Images locales au dossier
+└── cours/                    # Dossiers sources (défaut)
+    ├── collections.toml      # Définition des collections
+    ├── images/               # Images partagées
+    └── <dossiers>/           # Dossiers de cours
+        ├── cours.md
+        └── images/           # Images locales au dossier
 ```
 
 ## Utilisation
+
+### Serveur de développement (hot reload)
+```bash
+python preview.py               # Ouvre http://localhost:8000
+python preview.py --port 8080   # Port personnalisé
+python preview.py --no-watch    # Sans surveillance des fichiers
+```
 
 ### Build complet
 ```bash
@@ -47,6 +55,7 @@ python build.py
 python build.py --clean                  # Nettoie avant compilation
 python build.py -s ./sources -o ./dist   # Dossiers personnalisés
 python build.py --title "Mes Formations" # Titre du site
+python build.py --preview                # Inclure les cours en draft
 ```
 
 ### Compilation d'un seul cours
@@ -107,6 +116,7 @@ Un cours peut appartenir à plusieurs collections.
 | `ocean` | Bleu-vert | Noyade, milieu aquatique (défaut) |
 | `glacier` | Bleu froid | Hypothermie, froid |
 | `bordeaux` | Rouge sombre | Pendaison, strangulation, trauma |
+| `qroc` | Gris foncé / vert+rouge | Slides de révision Q&A |
 
 Le thème peut être défini :
 - Par collection dans `collections.toml`
@@ -121,17 +131,16 @@ dist/
 │   └── du-medecine-urgence.html
 ├── dossier1/
 │   └── noyade/
-│       ├── index.html            # Présentation interactive
-│       └── details.html          # Document imprimable
+│       ├── index.html            # Présentation interactive (CSS/JS inlinés)
+│       └── details.html          # Document imprimable (CSS/JS inlinés)
 ├── dossier2/
 │   └── hypothermie/
 │       └── ...
-├── assets/
-│   ├── style.css
-│   └── presentation.js
 ├── fonts/
 └── images/
 ```
+
+> Le CSS et le JS sont inlinés dans chaque fichier HTML — les présentations sont autonomes et ne dépendent d'aucun fichier externe.
 
 ## Navigation dans les présentations
 
