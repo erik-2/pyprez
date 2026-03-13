@@ -11,12 +11,13 @@ Usage:
 
 import sys
 import re
+import html as _html
 import argparse
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Tuple
 
-from lib import parse_details_only, format_markdown, format_table_html
+from lib import parse_details_only, format_markdown, format_table_html, parse_ref_attrs
 
 
 def parse_references_from_details(details: list) -> Tuple[list, Dict[str, dict]]:
@@ -33,11 +34,7 @@ def parse_references_from_details(details: list) -> Tuple[list, Dict[str, dict]]
             ref_def_match = re.match(r'^\[\^(\w+)\]:\s*\[@ref\s+(.+)\]$', detail['content'].strip())
             if ref_def_match:
                 ref_id = ref_def_match.group(1)
-                ref_attrs_str = ref_def_match.group(2)
-                attrs = {}
-                for m in re.finditer(r'(\w+)="([^"]*)"', ref_attrs_str):
-                    attrs[m.group(1)] = m.group(2)
-                references[ref_id] = attrs
+                references[ref_id] = parse_ref_attrs(ref_def_match.group(2))
                 continue
         
         content_details.append(detail)
@@ -49,32 +46,33 @@ def format_reference_footnote(attrs: dict) -> str:
     """Formate une référence pour la liste en bas de section"""
     parts = []
     if attrs.get('auteurs'):
-        parts.append(f'{attrs["auteurs"]}')
+        parts.append(_html.escape(attrs['auteurs']))
     if attrs.get('titre'):
-        parts.append(f'<em>{attrs["titre"]}</em>')
+        parts.append(f'<em>{_html.escape(attrs["titre"])}</em>')
     if attrs.get('revue'):
-        parts.append(f'{attrs["revue"]}')
+        parts.append(_html.escape(attrs['revue']))
     if attrs.get('date'):
-        parts.append(f'{attrs["date"]}')
-    
+        parts.append(_html.escape(str(attrs['date'])))
+
     text = '. '.join(parts)
-    
+
     if attrs.get('doi'):
-        doi = attrs["doi"]
-        text += f'. <a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>'
-    
+        doi = attrs['doi']
+        if re.match(r'^10\.\d{4,}/\S+$', doi):
+            text += f'. <a href="https://doi.org/{_html.escape(doi)}" class="ref-doi" target="_blank">DOI ↗</a>'
+
     return text
 
 
 def generate_details_document(metadata: dict, sections: list) -> str:
     """Génère le document HTML des détails"""
     
-    title = metadata.get('title', 'Document de Cours')
-    subtitle = metadata.get('subtitle', '')
-    author = metadata.get('author', '')
-    university = metadata.get('university', '')
-    date = metadata.get('date', datetime.now().strftime('%Y-%m-%d'))
-    
+    title = _html.escape(metadata.get('title', 'Document de Cours'))
+    subtitle = _html.escape(metadata.get('subtitle', ''))
+    author = _html.escape(metadata.get('author', ''))
+    university = _html.escape(metadata.get('university', ''))
+    date = _html.escape(str(metadata.get('date', datetime.now().strftime('%Y-%m-%d'))))
+
     # Métadonnées header
     meta_parts = []
     if author:

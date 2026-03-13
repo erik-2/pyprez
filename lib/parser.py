@@ -7,6 +7,14 @@ from .config import MARKERS, MD_PREFIXES, SLIDE_TYPES
 import re
 
 
+def parse_ref_attrs(attrs_str: str) -> Dict[str, str]:
+    """Parse les attributs d'une référence [@ref key="val" ...] en dict"""
+    attrs = {}
+    for m in re.finditer(r'(\w+)="([^"]*)"', attrs_str):
+        attrs[m.group(1)] = m.group(2)
+    return attrs
+
+
 def parse_metadata(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
     """Parse les métadonnées YAML en début de fichier"""
     metadata = {}
@@ -385,10 +393,7 @@ def _parse_detail_line(line: str) -> Dict[str, str]:
     # Référence: [@ref auteurs="..." titre="..." ...]
     ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
     if ref_match:
-        attrs = {}
-        for m in re.finditer(r'(\w+)="([^"]*)"', ref_match.group(1)):
-            attrs[m.group(1)] = m.group(2)
-        return {'type': 'reference', **attrs}
+        return {'type': 'reference', **parse_ref_attrs(ref_match.group(1))}
     
     # Paragraphe normal
     return {'type': 'paragraph', 'content': line}
@@ -412,11 +417,7 @@ def parse_details_with_references(details: List[str]) -> Tuple[List[str], Dict[s
         ref_def_match = re.match(r'^\[\^(\w+)\]:\s*\[@ref\s+(.+)\]$', line.strip())
         if ref_def_match:
             ref_id = ref_def_match.group(1)
-            ref_attrs_str = ref_def_match.group(2)
-            attrs = {}
-            for m in re.finditer(r'(\w+)="([^"]*)"', ref_attrs_str):
-                attrs[m.group(1)] = m.group(2)
-            references[ref_id] = attrs
+            references[ref_id] = parse_ref_attrs(ref_def_match.group(2))
         else:
             content_lines.append(line)
     

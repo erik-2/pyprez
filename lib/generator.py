@@ -3,37 +3,48 @@ Générateur HTML pour les présentations et pages statiques
 """
 
 import re
+import html as _html
 from pathlib import Path
 from typing import Optional, Dict, List
 from datetime import datetime
 
 from .models import Slide, Presentation
 from .config import CSS_FONTS, ASSETS, THEMES, DEFAULT_THEME
+from .parser import parse_ref_attrs
 
 
 def format_markdown(text: str) -> str:
     """Convertit le Markdown simple en HTML"""
+    text = _html.escape(text)
     text = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', text)
     text = re.sub(r'\*([^*]+)\*', r'<em>\1</em>', text)
     text = re.sub(r'`([^`]+)`', r'<code>\1</code>', text)
     return text
 
 
+def _safe_doi_href(doi: str) -> str:
+    """Retourne un href DOI valide ou None si le DOI est suspect"""
+    if re.match(r'^10\.\d{4,}/\S+$', doi):
+        return f'https://doi.org/{_html.escape(doi)}'
+    return None
+
+
 def format_reference(attrs: dict) -> str:
     """Formate une référence bibliographique"""
     parts = []
     if attrs.get('auteurs'):
-        parts.append(f'<span class="ref-auteurs">{attrs["auteurs"]}</span>')
+        parts.append(f'<span class="ref-auteurs">{_html.escape(attrs["auteurs"])}</span>')
     if attrs.get('titre'):
-        parts.append(f'<em class="ref-titre">{attrs["titre"]}</em>')
+        parts.append(f'<em class="ref-titre">{_html.escape(attrs["titre"])}</em>')
     if attrs.get('revue'):
-        parts.append(f'<span class="ref-revue">{attrs["revue"]}</span>')
+        parts.append(f'<span class="ref-revue">{_html.escape(attrs["revue"])}</span>')
     if attrs.get('date'):
-        parts.append(f'<span class="ref-date">{attrs["date"]}</span>')
+        parts.append(f'<span class="ref-date">{_html.escape(str(attrs["date"]))}</span>')
     if attrs.get('doi'):
-        doi = attrs["doi"]
-        parts.append(f'<a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>')
-    
+        href = _safe_doi_href(attrs["doi"])
+        if href:
+            parts.append(f'<a href="{href}" class="ref-doi" target="_blank">DOI ↗</a>')
+
     return f'<p class="reference">{". ".join(parts)}.</p>'
 
 
@@ -41,22 +52,21 @@ def format_detail_line(line: str) -> str:
     """Formate une ligne de détail en HTML"""
     img_match = re.match(r'^!\[([^\]]*)\]\(([^)]+)\)$', line.strip())
     if img_match:
-        alt = img_match.group(1)
-        url = img_match.group(2)
-        if not url.startswith(('http://', 'https://', '/')):
-            url = f'../../images/{url}'
+        alt = _html.escape(img_match.group(1))
+        raw_url = img_match.group(2)
+        if not raw_url.startswith(('http://', 'https://', '/')):
+            url = f'../../images/{Path(raw_url).name}'
+        else:
+            url = raw_url
         caption = f'<figcaption>{alt}</figcaption>' if alt else ''
         return f'''<figure class="detail-image">
-                            <img src="{url}" alt="{alt}">
+                            <img src="{_html.escape(url)}" alt="{alt}">
                             {caption}
                         </figure>'''
-    
+
     ref_match = re.match(r'^\[@ref\s+(.+)\]$', line.strip())
     if ref_match:
-        attrs = {}
-        for m in re.finditer(r'(\w+)="([^"]*)"', ref_match.group(1)):
-            attrs[m.group(1)] = m.group(2)
-        return format_reference(attrs)
+        return format_reference(parse_ref_attrs(ref_match.group(1)))
 
     if line.strip().startswith('> '):
         content = format_markdown(line.strip()[2:])
@@ -172,7 +182,7 @@ class HTMLGenerator(BaseGenerator):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{presentation.title}</title>
+    <title>{_html.escape(presentation.title)}</title>
     <link rel="icon" href="{self.FAVICON}">
     <style>
 {css}{draft_css}
@@ -216,13 +226,13 @@ class HTMLGenerator(BaseGenerator):
     
     def _slide_title(self, slide: Slide) -> str:
         """Génère une slide de titre"""
-        subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
+        subtitle = f'<p class="subtitle">{_html.escape(slide.subtitle)}</p>' if slide.subtitle else ''
         return f'''
             <!-- SLIDE TITRE -->
             <div class="slide slide-main" data-no-annexes="true">
                 <div class="position-indicator"></div>
                 <div class="content">
-                    <h1>{slide.title}</h1>
+                    <h1>{_html.escape(slide.title)}</h1>
                     {subtitle}
                 </div>
                 <div class="nav-hint">
@@ -232,7 +242,7 @@ class HTMLGenerator(BaseGenerator):
     
     def _slide_section(self, slide: Slide, is_last: bool = False) -> str:
         """Génère une slide de section"""
-        subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
+        subtitle = f'<p class="subtitle">{_html.escape(slide.subtitle)}</p>' if slide.subtitle else ''
         if is_last:
             nav_hint = '''
                 <span><span class="key-icon">Q</span> Quitter</span>'''
@@ -244,7 +254,7 @@ class HTMLGenerator(BaseGenerator):
             <!-- SLIDE SECTION -->
             <div class="slide slide-section" data-no-annexes="true">
                 <div class="content">
-                    <h1>{slide.title}</h1>
+                    <h1>{_html.escape(slide.title)}</h1>
                     {subtitle}
                 </div>
                 <div class="nav-hint">
@@ -263,8 +273,8 @@ class HTMLGenerator(BaseGenerator):
         else:
             data_attrs = ''
         
-        subtitle = f'<p class="subtitle">{slide.subtitle}</p>' if slide.subtitle else ''
-        
+        subtitle = f'<p class="subtitle">{_html.escape(slide.subtitle)}</p>' if slide.subtitle else ''
+
         points_html = []
         for p in slide.content:
             if isinstance(p, dict):
@@ -317,11 +327,11 @@ class HTMLGenerator(BaseGenerator):
                         <span><span class="key-icon">↑↓</span> Navigation</span>'''
         
         html = f'''
-            <!-- SLIDE {slide.number} : {slide.title} -->
+            <!-- SLIDE {slide.number} : {_html.escape(slide.title)} -->
             <div class="slide slide-main"{data_attrs}>
                 <div class="position-indicator">{slide.number} / {total}</div>
                 <div class="content">
-                    <h1>{slide.title}</h1>
+                    <h1>{_html.escape(slide.title)}</h1>
                     {subtitle}
                     {points}
                 </div>
@@ -750,24 +760,25 @@ class PageGenerator(BaseGenerator):
 
 
 def format_reference_inline(attrs: dict) -> str:
-        """Formate une référence pour la liste en bas de slide"""
-        parts = []
-        if attrs.get('auteurs'):
-            parts.append(f'{attrs["auteurs"]}')
-        if attrs.get('titre'):
-            parts.append(f'<em>{attrs["titre"]}</em>')
-        if attrs.get('revue'):
-            parts.append(f'{attrs["revue"]}')
-        if attrs.get('date'):
-            parts.append(f'{attrs["date"]}')
-        
-        text = '. '.join(parts)
-        
-        if attrs.get('doi'):
-            doi = attrs["doi"]
-            text += f' <a href="https://doi.org/{doi}" class="ref-doi" target="_blank">DOI ↗</a>'
-        
-        return text
+    """Formate une référence pour la liste en bas de slide"""
+    parts = []
+    if attrs.get('auteurs'):
+        parts.append(_html.escape(attrs['auteurs']))
+    if attrs.get('titre'):
+        parts.append(f'<em>{_html.escape(attrs["titre"])}</em>')
+    if attrs.get('revue'):
+        parts.append(_html.escape(attrs['revue']))
+    if attrs.get('date'):
+        parts.append(_html.escape(str(attrs['date'])))
+
+    text = '. '.join(parts)
+
+    if attrs.get('doi'):
+        href = _safe_doi_href(attrs['doi'])
+        if href:
+            text += f' <a href="{href}" class="ref-doi" target="_blank">DOI ↗</a>'
+
+    return text
 
 def format_table_html(table: dict, css_class: str = 'detail-table') -> str:
     """Génère le HTML d'un tableau"""
